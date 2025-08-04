@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface UserProfileMenuProps {
   children: React.ReactNode;
@@ -25,6 +26,23 @@ interface UserProfileMenuProps {
 export function UserProfileMenu({ children }: UserProfileMenuProps) {
   const [darkMode, setDarkMode] = useState(false);
   const { toast } = useToast();
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt sur Zonaya !",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de se déconnecter",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleAction = (action: string) => {
     toast({
@@ -159,7 +177,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-destructive/10 hover:text-destructive text-destructive"
-            onClick={() => handleAction("Déconnexion")}
+            onClick={handleSignOut}
           >
             <LogOut className="w-4 h-4 mr-3" />
             Se déconnecter

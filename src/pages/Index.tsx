@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer, TrendingUp, Sparkles, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer, TrendingUp, Sparkles, Plus, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,9 +13,15 @@ import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { MessagesPanel } from "@/components/MessagesPanel";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
 const Index = () => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
   const [followedArtisans, setFollowedArtisans] = useState<Set<string>>(new Set());
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
