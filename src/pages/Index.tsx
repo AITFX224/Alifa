@@ -10,161 +10,176 @@ import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { MessagesPanel } from "@/components/MessagesPanel";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
-
 const Index = () => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [followedArtisans, setFollowedArtisans] = useState<Set<string>>(new Set());
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
-
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: "Fatou Diallo",
-      profession: "Coiffeuse",
-      location: "Conakry",
-      time: "Il y a 2h",
-      content: "Nouvelle coiffure tendance ! Qui veut essayer ce style moderne ? 💇‍♀️✨",
-      image: "/placeholder.svg",
-      likes: 24,
-      comments: 8,
-      shares: 3,
-      avatar: "/placeholder.svg",
-      verified: true
-    },
-    {
-      id: 2,
-      author: "Mamadou Camara",
-      profession: "Tailleur",
-      location: "Kindia",
-      time: "Il y a 4h",
-      content: "Costume sur mesure terminé ! Broderies traditionnelles guinéennes. Contactez-moi pour vos commandes 👔",
-      image: "/placeholder.svg",
-      likes: 18,
-      comments: 5,
-      shares: 2,
-      avatar: "/placeholder.svg",
-      verified: false
-    },
-    {
-      id: 3,
-      author: "Aïssatou Barry",
-      profession: "Bijoutière",
-      location: "Labé",
-      time: "Il y a 6h",
-      content: "Nouvelles créations en or ! Bijoux traditionnels avec une touche moderne 💍✨",
-      image: "/placeholder.svg",
-      likes: 31,
-      comments: 12,
-      shares: 7,
-      avatar: "/placeholder.svg",
-      verified: true
-    }
-  ]);
-
-  const shortcuts = [
-    { name: "Coiffeurs", icon: "✂️", count: 245, trend: "+12%" },
-    { name: "Tailleurs", icon: "👔", count: 189, trend: "+8%" },
-    { name: "Menuisiers", icon: "🔨", count: 156, trend: "+15%" },
-    { name: "Mécaniciens", icon: "🔧", count: 203, trend: "+5%" }
-  ];
-
-  const suggestions = [
-    { name: "Ibrahim Diallo", profession: "Électricien", location: "Conakry", rating: 4.9, mutual: 5 },
-    { name: "Mariama Soumah", profession: "Couturière", location: "Kankan", rating: 4.7, mutual: 3 },
-    { name: "Alpha Condé", profession: "Menuisier", location: "Labé", rating: 4.8, mutual: 8 }
-  ];
-
-  const trendingTopics = [
-    { name: "#CoiffureModerne", posts: 45, growth: "+23%" },
-    { name: "#TailleurGuinéen", posts: 32, growth: "+18%" },
-    { name: "#BijouxAfricains", posts: 28, growth: "+31%" },
-    { name: "#MenuiserieArt", posts: 21, growth: "+12%" }
-  ];
+  const [posts, setPosts] = useState([{
+    id: 1,
+    author: "Fatou Diallo",
+    profession: "Coiffeuse",
+    location: "Conakry",
+    time: "Il y a 2h",
+    content: "Nouvelle coiffure tendance ! Qui veut essayer ce style moderne ? 💇‍♀️✨",
+    image: "/placeholder.svg",
+    likes: 24,
+    comments: 8,
+    shares: 3,
+    avatar: "/placeholder.svg",
+    verified: true
+  }, {
+    id: 2,
+    author: "Mamadou Camara",
+    profession: "Tailleur",
+    location: "Kindia",
+    time: "Il y a 4h",
+    content: "Costume sur mesure terminé ! Broderies traditionnelles guinéennes. Contactez-moi pour vos commandes 👔",
+    image: "/placeholder.svg",
+    likes: 18,
+    comments: 5,
+    shares: 2,
+    avatar: "/placeholder.svg",
+    verified: false
+  }, {
+    id: 3,
+    author: "Aïssatou Barry",
+    profession: "Bijoutière",
+    location: "Labé",
+    time: "Il y a 6h",
+    content: "Nouvelles créations en or ! Bijoux traditionnels avec une touche moderne 💍✨",
+    image: "/placeholder.svg",
+    likes: 31,
+    comments: 12,
+    shares: 7,
+    avatar: "/placeholder.svg",
+    verified: true
+  }]);
+  const shortcuts = [{
+    name: "Coiffeurs",
+    icon: "✂️",
+    count: 245,
+    trend: "+12%"
+  }, {
+    name: "Tailleurs",
+    icon: "👔",
+    count: 189,
+    trend: "+8%"
+  }, {
+    name: "Menuisiers",
+    icon: "🔨",
+    count: 156,
+    trend: "+15%"
+  }, {
+    name: "Mécaniciens",
+    icon: "🔧",
+    count: 203,
+    trend: "+5%"
+  }];
+  const suggestions = [{
+    name: "Ibrahim Diallo",
+    profession: "Électricien",
+    location: "Conakry",
+    rating: 4.9,
+    mutual: 5
+  }, {
+    name: "Mariama Soumah",
+    profession: "Couturière",
+    location: "Kankan",
+    rating: 4.7,
+    mutual: 3
+  }, {
+    name: "Alpha Condé",
+    profession: "Menuisier",
+    location: "Labé",
+    rating: 4.8,
+    mutual: 8
+  }];
+  const trendingTopics = [{
+    name: "#CoiffureModerne",
+    posts: 45,
+    growth: "+23%"
+  }, {
+    name: "#TailleurGuinéen",
+    posts: 32,
+    growth: "+18%"
+  }, {
+    name: "#BijouxAfricains",
+    posts: 28,
+    growth: "+31%"
+  }, {
+    name: "#MenuiserieArt",
+    posts: 21,
+    growth: "+12%"
+  }];
 
   // Fonctions pour gérer les interactions
   const handleLikePost = (postId: number) => {
     const isLiked = likedPosts.has(postId);
     const newLikedPosts = new Set(likedPosts);
-    
     if (isLiked) {
       newLikedPosts.delete(postId);
     } else {
       newLikedPosts.add(postId);
     }
-    
     setLikedPosts(newLikedPosts);
-    
-    // Mettre à jour le count des likes
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, likes: post.likes + (isLiked ? -1 : 1) }
-        : post
-    ));
 
+    // Mettre à jour le count des likes
+    setPosts(posts.map(post => post.id === postId ? {
+      ...post,
+      likes: post.likes + (isLiked ? -1 : 1)
+    } : post));
     toast({
       title: isLiked ? "Like retiré" : "Publication aimée !",
-      description: isLiked ? "Vous n'aimez plus cette publication" : "Votre like a été ajouté",
+      description: isLiked ? "Vous n'aimez plus cette publication" : "Votre like a été ajouté"
     });
   };
-
   const handleFollowArtisan = (artisanName: string) => {
     const isFollowed = followedArtisans.has(artisanName);
     const newFollowed = new Set(followedArtisans);
-    
     if (isFollowed) {
       newFollowed.delete(artisanName);
     } else {
       newFollowed.add(artisanName);
     }
-    
     setFollowedArtisans(newFollowed);
-    
     toast({
       title: isFollowed ? "Ne plus suivre" : "Suivi !",
-      description: isFollowed 
-        ? `Vous ne suivez plus ${artisanName}` 
-        : `Vous suivez maintenant ${artisanName}`,
+      description: isFollowed ? `Vous ne suivez plus ${artisanName}` : `Vous suivez maintenant ${artisanName}`
     });
   };
-
   const handleSectionChange = (section: string) => {
     setCurrentSection(section);
     toast({
       title: "Navigation",
-      description: `Section ${section} sélectionnée`,
+      description: `Section ${section} sélectionnée`
     });
   };
-
   const handleSharePost = (postId: number) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, shares: post.shares + 1 }
-        : post
-    ));
-    
+    setPosts(posts.map(post => post.id === postId ? {
+      ...post,
+      shares: post.shares + 1
+    } : post));
     toast({
       title: "Publication partagée !",
-      description: "Le contenu a été partagé avec vos contacts",
+      description: "Le contenu a été partagé avec vos contacts"
     });
   };
-
   const handleCommentPost = (postId: number) => {
     toast({
       title: "Commentaires",
-      description: "Ouverture de la section commentaires...",
+      description: "Ouverture de la section commentaires..."
     });
   };
-
   const handleShortcutClick = (shortcutName: string) => {
     toast({
       title: `${shortcutName} sélectionnés`,
-      description: `Affichage de tous les ${shortcutName.toLowerCase()}`,
+      description: `Affichage de tous les ${shortcutName.toLowerCase()}`
     });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Enhanced Header */}
       <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 shadow-soft">
         <div className="max-w-7xl mx-auto px-4">
@@ -176,37 +191,19 @@ const Index = () => {
               </h1>
               <div className="relative max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input 
-                  placeholder="Rechercher des artisans..."
-                  className="pl-10 bg-muted/30 border-border/50 backdrop-blur-sm w-72 focus:bg-card/50 transition-all duration-300"
-                />
+                <Input placeholder="Rechercher des artisans..." className="pl-10 bg-muted/30 border-border/50 backdrop-blur-sm w-72 focus:bg-card/50 transition-all duration-300" />
               </div>
             </div>
 
             {/* Navigation centrale */}
             <div className="flex items-center space-x-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'home' ? 'bg-primary/10 text-primary' : ''}`}
-                onClick={() => handleSectionChange('home')}
-              >
+              <Button variant="ghost" size="sm" className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'home' ? 'bg-primary/10 text-primary' : ''}`} onClick={() => handleSectionChange('home')}>
                 <Home className="w-5 h-5" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'users' ? 'bg-primary/10 text-primary' : ''}`}
-                onClick={() => handleSectionChange('users')}
-              >
+              <Button variant="ghost" size="sm" className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'users' ? 'bg-primary/10 text-primary' : ''}`} onClick={() => handleSectionChange('users')}>
                 <Users className="w-5 h-5" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'artisans' ? 'bg-primary/10 text-primary' : ''}`}
-                onClick={() => handleSectionChange('artisans')}
-              >
+              <Button variant="ghost" size="sm" className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'artisans' ? 'bg-primary/10 text-primary' : ''}`} onClick={() => handleSectionChange('artisans')}>
                 <Hammer className="w-5 h-5" />
               </Button>
             </div>
@@ -254,13 +251,7 @@ const Index = () => {
                   <TrendingUp className="w-4 h-4 text-success" />
                 </div>
                 <div className="space-y-3">
-                  {shortcuts.map((shortcut, index) => (
-                    <Button 
-                      key={index} 
-                      variant="ghost" 
-                      className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group"
-                      onClick={() => handleShortcutClick(shortcut.name)}
-                    >
+                  {shortcuts.map((shortcut, index) => <Button key={index} variant="ghost" className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group" onClick={() => handleShortcutClick(shortcut.name)}>
                       <div className="flex items-center">
                         <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
                         <div className="text-left">
@@ -271,33 +262,12 @@ const Index = () => {
                       <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
                         {shortcut.trend}
                       </Badge>
-                    </Button>
-                  ))}
+                    </Button>)}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="card-enhanced animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <CardContent className="p-5">
-                <h3 className="font-poppins font-semibold text-lg mb-4">Actions rapides</h3>
-                <div className="space-y-3">
-                  <CreatePostDialog>
-                    <Button variant="outline" className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60">
-                      <Camera className="w-4 h-4 mr-3 text-primary" />
-                      Publier une photo
-                    </Button>
-                  </CreatePostDialog>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60"
-                    onClick={() => toast({ title: "Profil artisan", description: "Création de profil artisan..." })}
-                  >
-                    <Users className="w-4 h-4 mr-3 text-primary" />
-                    Créer profil artisan
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            
           </div>
 
           {/* Fil d'actualité central amélioré */}
@@ -311,10 +281,7 @@ const Index = () => {
                     <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
                   </Avatar>
                   <CreatePostDialog>
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300"
-                    >
+                    <Button variant="outline" className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300">
                       Que voulez-vous partager, artisan ?
                     </Button>
                   </CreatePostDialog>
@@ -326,21 +293,17 @@ const Index = () => {
                       Photo/Vidéo
                     </Button>
                   </CreatePostDialog>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="hover:bg-primary/10 hover:text-primary"
-                    onClick={() => toast({ title: "Localisation", description: "Ajout de localisation..." })}
-                  >
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
+                  title: "Localisation",
+                  description: "Ajout de localisation..."
+                })}>
                     <MapPin className="w-4 h-4 mr-2" />
                     Localisation
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="hover:bg-primary/10 hover:text-primary"
-                    onClick={() => toast({ title: "Événement", description: "Création d'événement..." })}
-                  >
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
+                  title: "Événement",
+                  description: "Création d'événement..."
+                })}>
                     <Sparkles className="w-4 h-4 mr-2" />
                     Événement
                   </Button>
@@ -349,8 +312,9 @@ const Index = () => {
             </Card>
 
             {/* Publications améliorées */}
-            {posts.map((post, index) => (
-              <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{ animationDelay: `${0.1 * index}s` }}>
+            {posts.map((post, index) => <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{
+            animationDelay: `${0.1 * index}s`
+          }}>
                 <CardContent className="p-0">
                   {/* En-tête du post amélioré */}
                   <div className="p-5 flex items-center justify-between">
@@ -364,9 +328,7 @@ const Index = () => {
                       <div>
                         <div className="flex items-center space-x-2">
                           <h4 className="font-poppins font-semibold">{post.author}</h4>
-                          {post.verified && (
-                            <Sparkles className="w-4 h-4 text-primary fill-primary" />
-                          )}
+                          {post.verified && <Sparkles className="w-4 h-4 text-primary fill-primary" />}
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <span className="font-medium text-primary">{post.profession}</span>
@@ -409,45 +371,33 @@ const Index = () => {
                       </div>
                     </div>
                     <div className="flex items-center border-t border-border/50 pt-3">
-                      <Button 
-                        variant="ghost" 
-                        className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id) ? 'text-destructive bg-destructive/10' : ''}`}
-                        onClick={() => handleLikePost(post.id)}
-                      >
+                      <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id) ? 'text-destructive bg-destructive/10' : ''}`} onClick={() => handleLikePost(post.id)}>
                         <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id) ? 'fill-destructive' : ''}`} />
                         J'aime
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200"
-                        onClick={() => handleCommentPost(post.id)}
-                      >
+                      <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => handleCommentPost(post.id)}>
                         <MessageCircle className="w-4 h-4 mr-2" />
                         Commenter
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200"
-                        onClick={() => handleSharePost(post.id)}
-                      >
+                      <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => handleSharePost(post.id)}>
                         <Share className="w-4 h-4 mr-2" />
                         Partager
                       </Button>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
 
           {/* Sidebar droite améliorée */}
           <div className="col-span-3 space-y-6">
-            <Card className="card-enhanced animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <Card className="card-enhanced animate-fade-in" style={{
+            animationDelay: '0.2s'
+          }}>
               <CardContent className="p-5">
                 <h3 className="font-poppins font-semibold text-lg mb-4">Artisans suggérés</h3>
                 <div className="space-y-4">
-                  {suggestions.map((suggestion, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
+                  {suggestions.map((suggestion, index) => <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
                       <div className="flex items-center space-x-3">
                         <Avatar className="w-10 h-10 ring-2 ring-primary/20">
                           <AvatarImage src="/placeholder.svg" />
@@ -465,29 +415,24 @@ const Index = () => {
                           </div>
                          </div>
                        </div>
-                       <Button 
-                         size="sm" 
-                         variant={followedArtisans.has(suggestion.name) ? "default" : "outline"} 
-                         className="hover-scale"
-                         onClick={() => handleFollowArtisan(suggestion.name)}
-                       >
+                       <Button size="sm" variant={followedArtisans.has(suggestion.name) ? "default" : "outline"} className="hover-scale" onClick={() => handleFollowArtisan(suggestion.name)}>
                          {followedArtisans.has(suggestion.name) ? "Suivi" : "Suivre"}
                        </Button>
-                     </div>
-                  ))}
+                     </div>)}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="card-enhanced animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <Card className="card-enhanced animate-fade-in" style={{
+            animationDelay: '0.3s'
+          }}>
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-poppins font-semibold text-lg">Tendances</h3>
                   <TrendingUp className="w-4 h-4 text-success" />
                 </div>
                 <div className="space-y-3">
-                  {trendingTopics.map((topic, index) => (
-                    <div key={index} className="p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
+                  {trendingTopics.map((topic, index) => <div key={index} className="p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-1">
                         <div className="font-semibold text-sm text-primary">{topic.name}</div>
                         <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs">
@@ -497,16 +442,13 @@ const Index = () => {
                       <div className="text-xs text-muted-foreground">
                         {topic.posts} publications
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
