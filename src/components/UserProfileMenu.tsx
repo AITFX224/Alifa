@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   User, 
   Settings, 
@@ -27,6 +28,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
   const [darkMode, setDarkMode] = useState(false);
   const { toast } = useToast();
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -44,11 +46,8 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
     }
   };
 
-  const handleAction = (action: string) => {
-    toast({
-      title: `${action} sélectionné`,
-      description: `Vous avez cliqué sur ${action}`,
-    });
+  const handleNavigation = (path: string) => {
+    navigate(path);
   };
 
   const toggleDarkMode = () => {
@@ -94,7 +93,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Mon profil")}
+            onClick={() => handleNavigation("/profile")}
           >
             <User className="w-4 h-4 mr-3" />
             Mon profil
@@ -103,7 +102,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Profil artisan")}
+            onClick={() => handleNavigation("/become-artisan")}
           >
             <Briefcase className="w-4 h-4 mr-3" />
             Devenir artisan
@@ -112,7 +111,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Mes avis")}
+            onClick={() => handleNavigation("/reviews")}
           >
             <Star className="w-4 h-4 mr-3" />
             Mes avis et notes
@@ -123,7 +122,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Paramètres")}
+            onClick={() => handleNavigation("/settings")}
           >
             <Settings className="w-4 h-4 mr-3" />
             Paramètres
@@ -132,7 +131,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Notifications")}
+            onClick={() => handleNavigation("/notifications")}
           >
             <Bell className="w-4 h-4 mr-3" />
             Préférences notifications
@@ -141,7 +140,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Confidentialité")}
+            onClick={() => handleNavigation("/privacy")}
           >
             <Shield className="w-4 h-4 mr-3" />
             Confidentialité et sécurité
@@ -168,7 +167,7 @@ export function UserProfileMenu({ children }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start p-3 hover:bg-muted/30"
-            onClick={() => handleAction("Aide")}
+            onClick={() => handleNavigation("/support")}
           >
             <HelpCircle className="w-4 h-4 mr-3" />
             Aide et support
