@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Hammer, Star, Users, Trophy, ArrowRight, Check, Upload, MapPin } from "lucide-react";
+import { useState, useRef } from "react";
+import { Hammer, Star, Users, Trophy, ArrowRight, Check, Upload, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 
 const BecomeArtisan = () => {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     businessName: "",
     profession: "",
@@ -91,6 +93,29 @@ const BecomeArtisan = () => {
         ? prev.specialties.filter(s => s !== specialty)
         : [...prev.specialties, specialty]
     }));
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            setUploadedImages(prev => [...prev, e.target.result as string]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   if (step === 4) {
@@ -299,15 +324,49 @@ const BecomeArtisan = () => {
 
               <div>
                 <Label>Portfolio/Échantillons de travail</Label>
-                <div className="mt-2 border-2 border-dashed border-muted rounded-lg p-8 text-center">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                />
+                <div 
+                  className="mt-2 border-2 border-dashed border-muted rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={triggerFileInput}
+                >
                   <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground">
                     Cliquez pour ajouter des photos de vos réalisations
                   </p>
-                  <Button variant="outline" size="sm" className="mt-2">
+                  <Button variant="outline" size="sm" className="mt-2" onClick={(e) => { e.stopPropagation(); triggerFileInput(); }}>
                     Choisir des fichiers
                   </Button>
                 </div>
+                
+                {uploadedImages.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Images sélectionnées ({uploadedImages.length})</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {uploadedImages.map((image, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={image}
+                            alt={`Portfolio ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border"
+                          />
+                          <button
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
