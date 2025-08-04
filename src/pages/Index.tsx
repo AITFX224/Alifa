@@ -1,12 +1,23 @@
+import { useState } from "react";
 import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer, TrendingUp, Sparkles, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { CreatePostDialog } from "@/components/CreatePostDialog";
+import { NotificationsPanel } from "@/components/NotificationsPanel";
+import { MessagesPanel } from "@/components/MessagesPanel";
+import { UserProfileMenu } from "@/components/UserProfileMenu";
 
 const Index = () => {
-  const posts = [
+  const { toast } = useToast();
+  const [followedArtisans, setFollowedArtisans] = useState<Set<string>>(new Set());
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const [currentSection, setCurrentSection] = useState("home");
+
+  const [posts, setPosts] = useState([
     {
       id: 1,
       author: "Fatou Diallo",
@@ -49,7 +60,7 @@ const Index = () => {
       avatar: "/placeholder.svg",
       verified: true
     }
-  ];
+  ]);
 
   const shortcuts = [
     { name: "Coiffeurs", icon: "✂️", count: 245, trend: "+12%" },
@@ -70,6 +81,87 @@ const Index = () => {
     { name: "#BijouxAfricains", posts: 28, growth: "+31%" },
     { name: "#MenuiserieArt", posts: 21, growth: "+12%" }
   ];
+
+  // Fonctions pour gérer les interactions
+  const handleLikePost = (postId: number) => {
+    const isLiked = likedPosts.has(postId);
+    const newLikedPosts = new Set(likedPosts);
+    
+    if (isLiked) {
+      newLikedPosts.delete(postId);
+    } else {
+      newLikedPosts.add(postId);
+    }
+    
+    setLikedPosts(newLikedPosts);
+    
+    // Mettre à jour le count des likes
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { ...post, likes: post.likes + (isLiked ? -1 : 1) }
+        : post
+    ));
+
+    toast({
+      title: isLiked ? "Like retiré" : "Publication aimée !",
+      description: isLiked ? "Vous n'aimez plus cette publication" : "Votre like a été ajouté",
+    });
+  };
+
+  const handleFollowArtisan = (artisanName: string) => {
+    const isFollowed = followedArtisans.has(artisanName);
+    const newFollowed = new Set(followedArtisans);
+    
+    if (isFollowed) {
+      newFollowed.delete(artisanName);
+    } else {
+      newFollowed.add(artisanName);
+    }
+    
+    setFollowedArtisans(newFollowed);
+    
+    toast({
+      title: isFollowed ? "Ne plus suivre" : "Suivi !",
+      description: isFollowed 
+        ? `Vous ne suivez plus ${artisanName}` 
+        : `Vous suivez maintenant ${artisanName}`,
+    });
+  };
+
+  const handleSectionChange = (section: string) => {
+    setCurrentSection(section);
+    toast({
+      title: "Navigation",
+      description: `Section ${section} sélectionnée`,
+    });
+  };
+
+  const handleSharePost = (postId: number) => {
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { ...post, shares: post.shares + 1 }
+        : post
+    ));
+    
+    toast({
+      title: "Publication partagée !",
+      description: "Le contenu a été partagé avec vos contacts",
+    });
+  };
+
+  const handleCommentPost = (postId: number) => {
+    toast({
+      title: "Commentaires",
+      description: "Ouverture de la section commentaires...",
+    });
+  };
+
+  const handleShortcutClick = (shortcutName: string) => {
+    toast({
+      title: `${shortcutName} sélectionnés`,
+      description: `Affichage de tous les ${shortcutName.toLowerCase()}`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -93,34 +185,59 @@ const Index = () => {
 
             {/* Navigation centrale */}
             <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" className="p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'home' ? 'bg-primary/10 text-primary' : ''}`}
+                onClick={() => handleSectionChange('home')}
+              >
                 <Home className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'users' ? 'bg-primary/10 text-primary' : ''}`}
+                onClick={() => handleSectionChange('users')}
+              >
                 <Users className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'artisans' ? 'bg-primary/10 text-primary' : ''}`}
+                onClick={() => handleSectionChange('artisans')}
+              >
                 <Hammer className="w-5 h-5" />
               </Button>
             </div>
 
             {/* Actions utilisateur */}
             <div className="flex items-center space-x-3 flex-1 justify-end">
-              <Button variant="ghost" size="sm" className="p-2 relative hover:bg-primary/10 transition-all duration-200">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full animate-pulse-glow"></span>
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2 hover:bg-primary/10 transition-all duration-200">
-                <MessageCircle className="w-5 h-5" />
-              </Button>
-              <Button className="btn-gradient">
-                <Plus className="w-4 h-4 mr-2" />
-                Publier
-              </Button>
-              <Avatar className="w-9 h-9 hover-scale cursor-pointer border-2 border-primary/20">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback className="bg-gradient-brand text-white font-semibold">U</AvatarFallback>
-              </Avatar>
+              <NotificationsPanel>
+                <Button variant="ghost" size="sm" className="p-2 hover:bg-primary/10 transition-all duration-200">
+                  <Bell className="w-5 h-5" />
+                </Button>
+              </NotificationsPanel>
+              
+              <MessagesPanel>
+                <Button variant="ghost" size="sm" className="p-2 hover:bg-primary/10 transition-all duration-200">
+                  <MessageCircle className="w-5 h-5" />
+                </Button>
+              </MessagesPanel>
+              
+              <CreatePostDialog>
+                <Button className="btn-gradient">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Publier
+                </Button>
+              </CreatePostDialog>
+              
+              <UserProfileMenu>
+                <Avatar className="w-9 h-9 hover-scale cursor-pointer border-2 border-primary/20">
+                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarFallback className="bg-gradient-brand text-white font-semibold">U</AvatarFallback>
+                </Avatar>
+              </UserProfileMenu>
             </div>
           </div>
         </div>
@@ -142,6 +259,7 @@ const Index = () => {
                       key={index} 
                       variant="ghost" 
                       className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group"
+                      onClick={() => handleShortcutClick(shortcut.name)}
                     >
                       <div className="flex items-center">
                         <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
@@ -163,11 +281,17 @@ const Index = () => {
               <CardContent className="p-5">
                 <h3 className="font-poppins font-semibold text-lg mb-4">Actions rapides</h3>
                 <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60">
-                    <Camera className="w-4 h-4 mr-3 text-primary" />
-                    Publier une photo
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60">
+                  <CreatePostDialog>
+                    <Button variant="outline" className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60">
+                      <Camera className="w-4 h-4 mr-3 text-primary" />
+                      Publier une photo
+                    </Button>
+                  </CreatePostDialog>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60"
+                    onClick={() => toast({ title: "Profil artisan", description: "Création de profil artisan..." })}
+                  >
                     <Users className="w-4 h-4 mr-3 text-primary" />
                     Créer profil artisan
                   </Button>
@@ -186,23 +310,37 @@ const Index = () => {
                     <AvatarImage src="/placeholder.svg" />
                     <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
                   </Avatar>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300"
-                  >
-                    Que voulez-vous partager, artisan ?
-                  </Button>
+                  <CreatePostDialog>
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300"
+                    >
+                      Que voulez-vous partager, artisan ?
+                    </Button>
+                  </CreatePostDialog>
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Photo/Vidéo
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                  <CreatePostDialog>
+                    <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                      <Camera className="w-4 h-4 mr-2" />
+                      Photo/Vidéo
+                    </Button>
+                  </CreatePostDialog>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="hover:bg-primary/10 hover:text-primary"
+                    onClick={() => toast({ title: "Localisation", description: "Ajout de localisation..." })}
+                  >
                     <MapPin className="w-4 h-4 mr-2" />
                     Localisation
                   </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="hover:bg-primary/10 hover:text-primary"
+                    onClick={() => toast({ title: "Événement", description: "Création d'événement..." })}
+                  >
                     <Sparkles className="w-4 h-4 mr-2" />
                     Événement
                   </Button>
@@ -271,15 +409,27 @@ const Index = () => {
                       </div>
                     </div>
                     <div className="flex items-center border-t border-border/50 pt-3">
-                      <Button variant="ghost" className="flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200">
-                        <Heart className="w-4 h-4 mr-2" />
+                      <Button 
+                        variant="ghost" 
+                        className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id) ? 'text-destructive bg-destructive/10' : ''}`}
+                        onClick={() => handleLikePost(post.id)}
+                      >
+                        <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id) ? 'fill-destructive' : ''}`} />
                         J'aime
                       </Button>
-                      <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200">
+                      <Button 
+                        variant="ghost" 
+                        className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                        onClick={() => handleCommentPost(post.id)}
+                      >
                         <MessageCircle className="w-4 h-4 mr-2" />
                         Commenter
                       </Button>
-                      <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200">
+                      <Button 
+                        variant="ghost" 
+                        className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200"
+                        onClick={() => handleSharePost(post.id)}
+                      >
                         <Share className="w-4 h-4 mr-2" />
                         Partager
                       </Button>
@@ -313,12 +463,17 @@ const Index = () => {
                             <span>{suggestion.rating}</span>
                             <span>• {suggestion.mutual} amis communs</span>
                           </div>
-                        </div>
-                      </div>
-                      <Button size="sm" variant="outline" className="hover-scale">
-                        Suivre
-                      </Button>
-                    </div>
+                         </div>
+                       </div>
+                       <Button 
+                         size="sm" 
+                         variant={followedArtisans.has(suggestion.name) ? "default" : "outline"} 
+                         className="hover-scale"
+                         onClick={() => handleFollowArtisan(suggestion.name)}
+                       >
+                         {followedArtisans.has(suggestion.name) ? "Suivi" : "Suivre"}
+                       </Button>
+                     </div>
                   ))}
                 </div>
               </CardContent>
