@@ -1,60 +1,192 @@
-import { useState } from "react";
-import { Camera, MapPin, Sparkles, X, Image as ImageIcon, Video } from "lucide-react";
+import { useState, useRef } from "react";
+import { Camera, MapPin, Sparkles, X, Image as ImageIcon, Video, Upload, Calendar, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreatePostDialogProps {
   children: React.ReactNode;
+}
+
+interface MediaFile {
+  file: File;
+  url: string;
+  type: 'image' | 'video';
+}
+
+interface Event {
+  title: string;
+  date: string;
+  time: string;
+  description: string;
 }
 
 export function CreatePostDialog({ children }: CreatePostDialogProps) {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [attachments, setAttachments] = useState<string[]>([]);
+  const [locationSearch, setLocationSearch] = useState("");
+  const [showLocationSearch, setShowLocationSearch] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handlePost = () => {
-    if (!content.trim()) {
+  const handlePost = async () => {
+    if (!content.trim() && mediaFiles.length === 0) {
       toast({
         title: "Erreur",
-        description: "Veuillez écrire quelque chose avant de publier.",
+        description: "Veuillez écrire quelque chose ou ajouter des médias avant de publier.",
         variant: "destructive"
       });
       return;
     }
 
-    // Simuler la publication
-    toast({
-      title: "Publication créée !",
-      description: "Votre publication a été partagée avec succès.",
-    });
+    setUploading(true);
+    try {
+      // Upload media files to Supabase Storage
+      const uploadedMediaUrls = [];
+      for (const media of mediaFiles) {
+        const fileName = `${Date.now()}_${media.file.name}`;
+        const { data, error } = await supabase.storage
+          .from('posts-media')
+          .upload(fileName, media.file);
 
-    // Reset form
-    setContent("");
-    setSelectedLocation("");
-    setAttachments([]);
-    setOpen(false);
+        if (error) throw error;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('posts-media')
+          .getPublicUrl(fileName);
+        
+        uploadedMediaUrls.push(publicUrl);
+      }
+
+      // Simuler la publication avec les médias uploadés
+      toast({
+        title: "Publication créée !",
+        description: `Votre publication a été partagée avec succès${uploadedMediaUrls.length > 0 ? ` avec ${uploadedMediaUrls.length} fichier(s)` : ''}.`,
+      });
+
+      // Reset form
+      setContent("");
+      setSelectedLocation("");
+      setLocationSearch("");
+      setShowLocationSearch(false);
+      setMediaFiles([]);
+      setEvent(null);
+      setShowEventForm(false);
+      setOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'upload:', error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de l'upload des fichiers. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
+  const locations = [
+    "Conakry, Guinée", "Kindia, Guinée", "Labé, Guinée", "Kankan, Guinée", 
+    "N'Zérékoré, Guinée", "Mamou, Guinée", "Boké, Guinée", "Faranah, Guinée"
+  ];
+
+  const filteredLocations = locations.filter(location =>
+    location.toLowerCase().includes(locationSearch.toLowerCase())
+  );
+
   const addLocation = () => {
-    setSelectedLocation("Conakry, Guinée");
+    setShowLocationSearch(true);
+  };
+
+  const selectLocation = (location: string) => {
+    setSelectedLocation(location);
+    setShowLocationSearch(false);
+    setLocationSearch("");
     toast({
       title: "Localisation ajoutée",
-      description: "Conakry, Guinée",
+      description: location,
+    });
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    files.forEach(file => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      
+      if (!isImage && !isVideo) {
+        toast({
+          title: "Format non supporté",
+          description: "Veuillez sélectionner des images ou des vidéos.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast({
+          title: "Fichier trop volumineux",
+          description: "La taille maximum est de 10MB.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      const newMedia: MediaFile = {
+        file,
+        url,
+        type: isImage ? 'image' : 'video'
+      };
+      
+      setMediaFiles(prev => [...prev, newMedia]);
+    });
+    
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeMedia = (index: number) => {
+    setMediaFiles(prev => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index].url); // Clean up object URL
+      updated.splice(index, 1);
+      return updated;
     });
   };
 
   const addMedia = (type: 'photo' | 'video') => {
-    const newAttachment = type === 'photo' ? 'photo.jpg' : 'video.mp4';
-    setAttachments([...attachments, newAttachment]);
+    if (fileInputRef.current) {
+      fileInputRef.current.accept = type === 'photo' ? 'image/*' : 'video/*';
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleCreateEvent = () => {
+    setShowEventForm(true);
+  };
+
+  const saveEvent = (eventData: Event) => {
+    setEvent(eventData);
+    setShowEventForm(false);
     toast({
-      title: `${type === 'photo' ? 'Photo' : 'Vidéo'} ajoutée`,
-      description: `${type === 'photo' ? 'Photo' : 'Vidéo'} prête à être publiée`,
+      title: "Événement ajouté",
+      description: `${eventData.title} le ${eventData.date}`,
     });
   };
 
@@ -108,39 +240,208 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
             </Badge>
           )}
 
-          {/* Attachments */}
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {attachments.map((attachment, index) => (
-                <Badge key={index} variant="outline" className="flex items-center gap-2">
-                  {attachment.includes('photo') ? (
-                    <ImageIcon className="w-3 h-3" />
+          {/* Input file caché */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            multiple
+            className="hidden"
+          />
+
+          {/* Location search */}
+          {showLocationSearch && (
+            <Card className="border border-border/50">
+              <CardContent className="p-4">
+                <Label htmlFor="location-search">Rechercher une localisation</Label>
+                <Input
+                  id="location-search"
+                  placeholder="Tapez pour rechercher..."
+                  value={locationSearch}
+                  onChange={(e) => setLocationSearch(e.target.value)}
+                  className="mt-2"
+                />
+                <div className="mt-3 max-h-32 overflow-y-auto space-y-1">
+                  {filteredLocations.map((location, index) => (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-sm"
+                      onClick={() => selectLocation(location)}
+                    >
+                      <MapPin className="w-3 h-3 mr-2" />
+                      {location}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 w-full"
+                  onClick={() => setShowLocationSearch(false)}
+                >
+                  Annuler
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Event form */}
+          {showEventForm && (
+            <Card className="border border-border/50">
+              <CardContent className="p-4">
+                <h4 className="font-semibold mb-4">Créer un événement</h4>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="event-title">Titre de l'événement</Label>
+                    <Input
+                      id="event-title"
+                      placeholder="Nom de l'événement"
+                      value={event?.title || ""}
+                      onChange={(e) => setEvent(prev => ({ ...prev!, title: e.target.value }))}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="event-date">Date</Label>
+                      <Input
+                        id="event-date"
+                        type="date"
+                        value={event?.date || ""}
+                        onChange={(e) => setEvent(prev => ({ ...prev!, date: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="event-time">Heure</Label>
+                      <Input
+                        id="event-time"
+                        type="time"
+                        value={event?.time || ""}
+                        onChange={(e) => setEvent(prev => ({ ...prev!, time: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="event-description">Description</Label>
+                    <Textarea
+                      id="event-description"
+                      placeholder="Description de l'événement"
+                      value={event?.description || ""}
+                      onChange={(e) => setEvent(prev => ({ ...prev!, description: e.target.value }))}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={() => saveEvent({
+                        title: event?.title || "",
+                        date: event?.date || "",
+                        time: event?.time || "",
+                        description: event?.description || ""
+                      })}
+                      disabled={!event?.title || !event?.date}
+                      className="flex-1"
+                    >
+                      Ajouter l'événement
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowEventForm(false)}
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Media files preview */}
+          {mediaFiles.length > 0 && (
+            <div className="grid grid-cols-2 gap-3">
+              {mediaFiles.map((media, index) => (
+                <div key={index} className="relative group">
+                  {media.type === 'image' ? (
+                    <img
+                      src={media.url}
+                      alt="Preview"
+                      className="w-full h-32 object-cover rounded-lg border border-border/50"
+                    />
                   ) : (
-                    <Video className="w-3 h-3" />
+                    <video
+                      src={media.url}
+                      className="w-full h-32 object-cover rounded-lg border border-border/50"
+                      controls
+                    />
                   )}
-                  {attachment}
                   <Button
-                    variant="ghost"
+                    variant="destructive"
                     size="sm"
-                    className="h-auto p-0 ml-1 hover:bg-transparent"
-                    onClick={() => setAttachments(attachments.filter((_, i) => i !== index))}
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                    onClick={() => removeMedia(index)}
                   >
                     <X className="w-3 h-3" />
                   </Button>
-                </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="absolute bottom-2 left-2 text-xs"
+                  >
+                    {media.type === 'image' ? 'Photo' : 'Vidéo'}
+                  </Badge>
+                </div>
               ))}
             </div>
+          )}
+
+          {/* Event preview */}
+          {event && (
+            <Card className="border border-primary/20 bg-primary/5">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Calendar className="w-4 h-4 text-primary" />
+                    <span className="font-semibold text-primary">Événement</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-0 hover:bg-transparent"
+                    onClick={() => setEvent(null)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+                <h4 className="font-semibold">{event.title}</h4>
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
+                  <div className="flex items-center space-x-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(event.date).toLocaleDateString('fr-FR')}</span>
+                  </div>
+                  {event.time && (
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{event.time}</span>
+                    </div>
+                  )}
+                </div>
+                {event.description && (
+                  <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
+                )}
+              </CardContent>
+            </Card>
           )}
 
           {/* Action buttons */}
           <div className="border border-border/50 rounded-lg p-3">
             <p className="text-sm font-medium mb-3">Ajouter à votre publication</p>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-wrap gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => addMedia('photo')}
                 className="hover:bg-primary/10 hover:text-primary"
+                disabled={uploading}
               >
                 <Camera className="w-4 h-4 mr-2" />
                 Photo
@@ -150,6 +451,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
                 size="sm"
                 onClick={() => addMedia('video')}
                 className="hover:bg-primary/10 hover:text-primary"
+                disabled={uploading}
               >
                 <Video className="w-4 h-4 mr-2" />
                 Vidéo
@@ -159,6 +461,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
                 size="sm"
                 onClick={addLocation}
                 className="hover:bg-primary/10 hover:text-primary"
+                disabled={uploading}
               >
                 <MapPin className="w-4 h-4 mr-2" />
                 Lieu
@@ -166,7 +469,9 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={handleCreateEvent}
                 className="hover:bg-primary/10 hover:text-primary"
+                disabled={uploading}
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Événement
@@ -180,9 +485,16 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
           <Button 
             onClick={handlePost}
             className="w-full btn-gradient"
-            disabled={!content.trim()}
+            disabled={(!content.trim() && mediaFiles.length === 0) || uploading}
           >
-            Publier
+            {uploading ? (
+              <>
+                <Upload className="w-4 h-4 mr-2 animate-spin" />
+                Publication en cours...
+              </>
+            ) : (
+              'Publier'
+            )}
           </Button>
         </div>
       </DialogContent>
