@@ -53,7 +53,9 @@ const Auth = () => {
   const handleSignUp = async (email: string, password: string, displayName: string) => {
     setLoading(true);
     try {
+      console.log("🔵 Début inscription:", { email, displayName });
       const redirectUrl = `${window.location.origin}/`;
+      console.log("🔵 URL de redirection:", redirectUrl);
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -65,6 +67,8 @@ const Auth = () => {
           }
         }
       });
+
+      console.log("🔵 Réponse Supabase:", { data, error });
 
       if (error) throw error;
 
@@ -80,6 +84,7 @@ const Auth = () => {
         });
       }
     } catch (error: any) {
+      console.error("🔴 Erreur inscription:", error);
       let errorMessage = "Une erreur est survenue lors de l'inscription";
       
       if (error.message.includes("User already registered")) {
@@ -88,6 +93,8 @@ const Auth = () => {
         errorMessage = "Le mot de passe doit contenir au moins 6 caractères";
       } else if (error.message.includes("Invalid email")) {
         errorMessage = "Adresse email invalide";
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       toast({
@@ -103,10 +110,13 @@ const Auth = () => {
   const handleSignIn = async (email: string, password: string) => {
     setLoading(true);
     try {
+      console.log("🔵 Début connexion:", { email });
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      console.log("🔵 Réponse connexion:", { error });
 
       if (error) throw error;
 
@@ -115,12 +125,15 @@ const Auth = () => {
         description: "Bon retour sur Zonaya !",
       });
     } catch (error: any) {
+      console.error("🔴 Erreur connexion:", error);
       let errorMessage = "Email ou mot de passe incorrect";
       
       if (error.message.includes("Email not confirmed")) {
         errorMessage = "Veuillez confirmer votre email avant de vous connecter";
       } else if (error.message.includes("Invalid login credentials")) {
         errorMessage = "Email ou mot de passe incorrect";
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       toast({
