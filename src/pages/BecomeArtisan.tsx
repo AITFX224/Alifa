@@ -376,8 +376,7 @@ const BecomeArtisan = () => {
         <div className="flex items-center justify-between">
           <Button
             variant="outline"
-            onClick={() => setStep(Math.max(1, step - 1))}
-            disabled={step === 1}
+            onClick={() => setStep(step > 1 ? step - 1 : 1)}
           >
             Précédent
           </Button>
