@@ -1,8 +1,9 @@
-import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer } from "lucide-react";
+import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer, TrendingUp, Sparkles, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const posts = [
@@ -16,7 +17,9 @@ const Index = () => {
       image: "/placeholder.svg",
       likes: 24,
       comments: 8,
-      avatar: "/placeholder.svg"
+      shares: 3,
+      avatar: "/placeholder.svg",
+      verified: true
     },
     {
       id: 2,
@@ -28,7 +31,9 @@ const Index = () => {
       image: "/placeholder.svg",
       likes: 18,
       comments: 5,
-      avatar: "/placeholder.svg"
+      shares: 2,
+      avatar: "/placeholder.svg",
+      verified: false
     },
     {
       id: 3,
@@ -40,65 +45,81 @@ const Index = () => {
       image: "/placeholder.svg",
       likes: 31,
       comments: 12,
-      avatar: "/placeholder.svg"
+      shares: 7,
+      avatar: "/placeholder.svg",
+      verified: true
     }
   ];
 
   const shortcuts = [
-    { name: "Coiffeurs", icon: "✂️", count: 245 },
-    { name: "Tailleurs", icon: "👔", count: 189 },
-    { name: "Menuisiers", icon: "🔨", count: 156 },
-    { name: "Mécaniciens", icon: "🔧", count: 203 }
+    { name: "Coiffeurs", icon: "✂️", count: 245, trend: "+12%" },
+    { name: "Tailleurs", icon: "👔", count: 189, trend: "+8%" },
+    { name: "Menuisiers", icon: "🔨", count: 156, trend: "+15%" },
+    { name: "Mécaniciens", icon: "🔧", count: 203, trend: "+5%" }
   ];
 
   const suggestions = [
-    { name: "Ibrahim Diallo", profession: "Électricien", location: "Conakry" },
-    { name: "Mariama Soumah", profession: "Couturière", location: "Kankan" },
-    { name: "Alpha Condé", profession: "Menuisier", location: "Labé" }
+    { name: "Ibrahim Diallo", profession: "Électricien", location: "Conakry", rating: 4.9, mutual: 5 },
+    { name: "Mariama Soumah", profession: "Couturière", location: "Kankan", rating: 4.7, mutual: 3 },
+    { name: "Alpha Condé", profession: "Menuisier", location: "Labé", rating: 4.8, mutual: 8 }
+  ];
+
+  const trendingTopics = [
+    { name: "#CoiffureModerne", posts: 45, growth: "+23%" },
+    { name: "#TailleurGuinéen", posts: 32, growth: "+18%" },
+    { name: "#BijouxAfricains", posts: 28, growth: "+31%" },
+    { name: "#MenuiserieArt", posts: 21, growth: "+12%" }
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header à la Facebook */}
-      <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Enhanced Header */}
+      <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 shadow-soft">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-center justify-between h-16">
             {/* Logo et recherche */}
-            <div className="flex items-center space-x-4 flex-1">
-              <h1 className="text-2xl font-bold text-primary">Zonaya</h1>
+            <div className="flex items-center space-x-6 flex-1">
+              <h1 className="text-2xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent">
+                Zonaya
+              </h1>
               <div className="relative max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input 
                   placeholder="Rechercher des artisans..."
-                  className="pl-10 bg-muted/50 border-0 w-64"
+                  className="pl-10 bg-muted/30 border-border/50 backdrop-blur-sm w-72 focus:bg-card/50 transition-all duration-300"
                 />
               </div>
             </div>
 
             {/* Navigation centrale */}
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" className="p-3">
+            <div className="flex items-center space-x-1">
+              <Button variant="ghost" size="sm" className="p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200">
                 <Home className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-3">
+              <Button variant="ghost" size="sm" className="p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200">
                 <Users className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-3">
+              <Button variant="ghost" size="sm" className="p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200">
                 <Hammer className="w-5 h-5" />
               </Button>
             </div>
 
             {/* Actions utilisateur */}
-            <div className="flex items-center space-x-2 flex-1 justify-end">
-              <Button variant="ghost" size="sm" className="p-2">
+            <div className="flex items-center space-x-3 flex-1 justify-end">
+              <Button variant="ghost" size="sm" className="p-2 relative hover:bg-primary/10 transition-all duration-200">
                 <Bell className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full animate-pulse-glow"></span>
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
+              <Button variant="ghost" size="sm" className="p-2 hover:bg-primary/10 transition-all duration-200">
                 <MessageCircle className="w-5 h-5" />
               </Button>
-              <Avatar className="w-8 h-8">
+              <Button className="btn-gradient">
+                <Plus className="w-4 h-4 mr-2" />
+                Publier
+              </Button>
+              <Avatar className="w-9 h-9 hover-scale cursor-pointer border-2 border-primary/20">
                 <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback className="bg-gradient-brand text-white font-semibold">U</AvatarFallback>
               </Avatar>
             </div>
           </div>
@@ -107,121 +128,158 @@ const Index = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-12 gap-6">
-          {/* Sidebar gauche */}
-          <div className="col-span-3 space-y-4">
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-3">Raccourcis</h3>
-                <div className="space-y-2">
+          {/* Sidebar gauche améliorée */}
+          <div className="col-span-3 space-y-6">
+            <Card className="card-enhanced animate-fade-in">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-poppins font-semibold text-lg">Raccourcis</h3>
+                  <TrendingUp className="w-4 h-4 text-success" />
+                </div>
+                <div className="space-y-3">
                   {shortcuts.map((shortcut, index) => (
-                    <Button key={index} variant="ghost" className="w-full justify-start p-2">
-                      <span className="mr-3 text-lg">{shortcut.icon}</span>
-                      <div className="text-left">
-                        <div className="font-medium text-sm">{shortcut.name}</div>
-                        <div className="text-xs text-muted-foreground">{shortcut.count} artisans</div>
+                    <Button 
+                      key={index} 
+                      variant="ghost" 
+                      className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group"
+                    >
+                      <div className="flex items-center">
+                        <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
+                        <div className="text-left">
+                          <div className="font-medium text-sm">{shortcut.name}</div>
+                          <div className="text-xs text-muted-foreground">{shortcut.count} artisans</div>
+                        </div>
                       </div>
+                      <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
+                        {shortcut.trend}
+                      </Badge>
                     </Button>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-3">Créer</h3>
-                <div className="space-y-2">
-                  <Button variant="ghost" className="w-full justify-start p-2">
-                    <Camera className="w-4 h-4 mr-3" />
+            <Card className="card-enhanced animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <CardContent className="p-5">
+                <h3 className="font-poppins font-semibold text-lg mb-4">Actions rapides</h3>
+                <div className="space-y-3">
+                  <Button variant="outline" className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60">
+                    <Camera className="w-4 h-4 mr-3 text-primary" />
                     Publier une photo
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start p-2">
-                    <Users className="w-4 h-4 mr-3" />
-                    Profil artisan
+                  <Button variant="outline" className="w-full justify-start p-3 hover-lift border-dashed border-primary/30 hover:border-primary/60">
+                    <Users className="w-4 h-4 mr-3 text-primary" />
+                    Créer profil artisan
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Fil d'actualité central */}
-          <div className="col-span-6 space-y-4">
-            {/* Créer une publication */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <Avatar>
+          {/* Fil d'actualité central amélioré */}
+          <div className="col-span-6 space-y-6">
+            {/* Créer une publication améliorée */}
+            <Card className="card-enhanced animate-slide-up">
+              <CardContent className="p-5">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="w-11 h-11">
                     <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback>V</AvatarFallback>
+                    <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
                   </Avatar>
-                  <Button variant="outline" className="flex-1 justify-start text-muted-foreground">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300"
+                  >
                     Que voulez-vous partager, artisan ?
                   </Button>
                 </div>
-                <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                  <Button variant="ghost" size="sm">
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
                     <Camera className="w-4 h-4 mr-2" />
                     Photo/Vidéo
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
                     <MapPin className="w-4 h-4 mr-2" />
                     Localisation
+                  </Button>
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Événement
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Publications */}
-            {posts.map((post) => (
-              <Card key={post.id}>
+            {/* Publications améliorées */}
+            {posts.map((post, index) => (
+              <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{ animationDelay: `${0.1 * index}s` }}>
                 <CardContent className="p-0">
-                  {/* En-tête du post */}
-                  <div className="p-4 flex items-center justify-between">
+                  {/* En-tête du post amélioré */}
+                  <div className="p-5 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Avatar>
+                      <Avatar className="w-11 h-11 ring-2 ring-primary/20">
                         <AvatarImage src={post.avatar} />
-                        <AvatarFallback>{post.author[0]}</AvatarFallback>
+                        <AvatarFallback className="bg-gradient-brand text-white font-semibold">
+                          {post.author[0]}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h4 className="font-semibold">{post.author}</h4>
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-poppins font-semibold">{post.author}</h4>
+                          {post.verified && (
+                            <Sparkles className="w-4 h-4 text-primary fill-primary" />
+                          )}
+                        </div>
                         <div className="flex items-center text-sm text-muted-foreground">
-                          <span>{post.profession}</span>
-                          <span className="mx-1">•</span>
+                          <span className="font-medium text-primary">{post.profession}</span>
+                          <span className="mx-2">•</span>
                           <MapPin className="w-3 h-3 mr-1" />
                           <span>{post.location}</span>
-                          <span className="mx-1">•</span>
+                          <span className="mx-2">•</span>
                           <span>{post.time}</span>
                         </div>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="opacity-60 hover:opacity-100 transition-opacity">
                       <MoreHorizontal className="w-4 h-4" />
                     </Button>
                   </div>
 
                   {/* Contenu */}
-                  <div className="px-4 pb-3">
-                    <p>{post.content}</p>
+                  <div className="px-5 pb-4">
+                    <p className="leading-relaxed">{post.content}</p>
                   </div>
 
-                  {/* Image */}
-                  <div className="aspect-video bg-muted"></div>
+                  {/* Image avec effet */}
+                  <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  </div>
 
-                  {/* Actions */}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                      <span>{post.likes} mentions J'aime</span>
-                      <span>{post.comments} commentaires</span>
+                  {/* Actions améliorées */}
+                  <div className="p-5">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center space-x-4">
+                        <span className="hover:text-destructive cursor-pointer transition-colors">
+                          {post.likes} mentions J'aime
+                        </span>
+                        <span className="hover:text-primary cursor-pointer transition-colors">
+                          {post.comments} commentaires
+                        </span>
+                        <span className="hover:text-secondary cursor-pointer transition-colors">
+                          {post.shares} partages
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center border-t pt-2">
-                      <Button variant="ghost" className="flex-1">
+                    <div className="flex items-center border-t border-border/50 pt-3">
+                      <Button variant="ghost" className="flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200">
                         <Heart className="w-4 h-4 mr-2" />
                         J'aime
                       </Button>
-                      <Button variant="ghost" className="flex-1">
+                      <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200">
                         <MessageCircle className="w-4 h-4 mr-2" />
                         Commenter
                       </Button>
-                      <Button variant="ghost" className="flex-1">
+                      <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200">
                         <Share className="w-4 h-4 mr-2" />
                         Partager
                       </Button>
@@ -232,25 +290,32 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Sidebar droite */}
-          <div className="col-span-3 space-y-4">
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-3">Artisans suggérés</h3>
-                <div className="space-y-3">
+          {/* Sidebar droite améliorée */}
+          <div className="col-span-3 space-y-6">
+            <Card className="card-enhanced animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <CardContent className="p-5">
+                <h3 className="font-poppins font-semibold text-lg mb-4">Artisans suggérés</h3>
+                <div className="space-y-4">
                   {suggestions.map((suggestion, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Avatar className="w-8 h-8">
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="w-10 h-10 ring-2 ring-primary/20">
                           <AvatarImage src="/placeholder.svg" />
-                          <AvatarFallback>{suggestion.name[0]}</AvatarFallback>
+                          <AvatarFallback className="bg-gradient-brand text-white font-semibold">
+                            {suggestion.name[0]}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="text-sm font-medium">{suggestion.name}</div>
-                          <div className="text-xs text-muted-foreground">{suggestion.profession}</div>
+                          <div className="font-medium text-sm">{suggestion.name}</div>
+                          <div className="text-xs text-primary font-medium">{suggestion.profession}</div>
+                          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                            <span>{suggestion.rating}</span>
+                            <span>• {suggestion.mutual} amis communs</span>
+                          </div>
                         </div>
                       </div>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" className="hover-scale">
                         Suivre
                       </Button>
                     </div>
@@ -259,22 +324,26 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-3">Tendances</h3>
-                <div className="space-y-2">
-                  <div className="text-sm">
-                    <div className="font-medium">#CoiffureModerne</div>
-                    <div className="text-muted-foreground">45 publications</div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="font-medium">#TailleurGuinéen</div>
-                    <div className="text-muted-foreground">32 publications</div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="font-medium">#BijouxAfricains</div>
-                    <div className="text-muted-foreground">28 publications</div>
-                  </div>
+            <Card className="card-enhanced animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-poppins font-semibold text-lg">Tendances</h3>
+                  <TrendingUp className="w-4 h-4 text-success" />
+                </div>
+                <div className="space-y-3">
+                  {trendingTopics.map((topic, index) => (
+                    <div key={index} className="p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="font-semibold text-sm text-primary">{topic.name}</div>
+                        <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs">
+                          {topic.growth}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {topic.posts} publications
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
