@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Camera, MapPin, Sparkles, X, Image as ImageIcon, Video } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -66,6 +66,9 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
       <DialogContent className="sm:max-w-[600px] p-0 bg-card/95 backdrop-blur-md border border-border/50">
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="text-xl font-poppins font-semibold">Créer une publication</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Partagez votre travail, vos créations ou vos services avec la communauté Zonaya
+          </DialogDescription>
         </DialogHeader>
         
         <div className="px-6 space-y-4">
