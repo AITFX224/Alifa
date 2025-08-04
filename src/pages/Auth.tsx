@@ -11,6 +11,7 @@ import type { User, Session } from '@supabase/supabase-js';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -132,8 +133,49 @@ const Auth = () => {
     }
   };
 
+  const handleResetPassword = async (email: string) => {
+    setLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/auth`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email envoyé !",
+        description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe.",
+      });
+      
+      setIsResetPassword(false);
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer l'email de réinitialisation",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isResetPassword) {
+      if (!email) {
+        toast({
+          title: "Email requis",
+          description: "Veuillez entrer votre adresse email",
+          variant: "destructive",
+        });
+        return;
+      }
+      await handleResetPassword(email);
+      return;
+    }
     
     if (!email || !password) {
       toast({
@@ -169,20 +211,25 @@ const Auth = () => {
             Zonaya
           </h1>
           <p className="text-muted-foreground">
-            {isLogin ? "Connectez-vous à votre compte" : "Rejoignez la communauté des artisans"}
+            {isResetPassword 
+              ? "Réinitialisez votre mot de passe" 
+              : isLogin 
+                ? "Connectez-vous à votre compte" 
+                : "Rejoignez la communauté des artisans"
+            }
           </p>
         </div>
 
         <Card className="card-enhanced">
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-2xl font-poppins font-semibold text-center">
-              {isLogin ? "Connexion" : "Inscription"}
+              {isResetPassword ? "Mot de passe oublié" : isLogin ? "Connexion" : "Inscription"}
             </CardTitle>
           </CardHeader>
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
+              {!isLogin && !isResetPassword && (
                 <div className="space-y-2">
                   <Label htmlFor="displayName" className="text-sm font-medium">
                     Nom d'affichage
@@ -220,7 +267,8 @@ const Auth = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {!isResetPassword && (
+                <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium">
                   Mot de passe
                 </Label>
@@ -250,6 +298,7 @@ const Auth = () => {
                   </Button>
                 </div>
               </div>
+              )}
 
               <Button
                 type="submit"
@@ -263,24 +312,57 @@ const Auth = () => {
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <span>{isLogin ? "Se connecter" : "S'inscrire"}</span>
+                    <span>
+                      {isResetPassword 
+                        ? "Envoyer l'email" 
+                        : isLogin 
+                          ? "Se connecter" 
+                          : "S'inscrire"
+                      }
+                    </span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 )}
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
-              </p>
-              <Button
-                variant="link"
-                className="p-0 h-auto font-medium text-primary hover:text-primary-glow"
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin ? "Créer un compte" : "Se connecter"}
-              </Button>
+            <div className="mt-6 text-center space-y-2">
+              {!isResetPassword ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
+                  </p>
+                  <div className="flex flex-col space-y-1">
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto font-medium text-primary hover:text-primary-glow"
+                      onClick={() => setIsLogin(!isLogin)}
+                    >
+                      {isLogin ? "Créer un compte" : "Se connecter"}
+                    </Button>
+                    {isLogin && (
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-sm text-muted-foreground hover:text-foreground"
+                        onClick={() => setIsResetPassword(true)}
+                      >
+                        Mot de passe oublié ?
+                      </Button>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-medium text-primary hover:text-primary-glow"
+                  onClick={() => {
+                    setIsResetPassword(false);
+                    setIsLogin(true);
+                  }}
+                >
+                  Retour à la connexion
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
