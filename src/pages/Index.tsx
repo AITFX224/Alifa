@@ -201,61 +201,104 @@ const Index = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
       {/* Mobile Navigation */}
       <MobileNavigation currentSection={currentSection} onSectionChange={handleSectionChange} />
 
       {/* Desktop Header - Hidden on mobile */}
-      <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 shadow-soft hidden md:block">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+      <header className="glass backdrop-blur-xl border-b border-border/30 sticky top-0 z-50 shadow-large hidden md:block">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-18">
             {/* Logo et recherche */}
-            <div className="flex items-center space-x-6 flex-1">
+            <div className="flex items-center space-x-8 flex-1">
+              {/* Logo */}
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-brand rounded-xl flex items-center justify-center shadow-glow">
+                  <span className="text-lg font-bold text-white">A</span>
+                </div>
+                <span className="text-2xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent">
+                  Alifa
+                </span>
+              </div>
               
-              <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input placeholder="Rechercher des artisans..." className="pl-10 bg-muted/30 border-border/50 backdrop-blur-sm w-72 focus:bg-card/50 transition-all duration-300" />
+              <div className="relative max-w-lg">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <Input 
+                  placeholder="Rechercher des artisans, métiers..." 
+                  className="pl-12 pr-4 h-12 bg-muted/20 border-border/40 backdrop-blur-sm w-80 focus:bg-card/60 focus:border-primary/40 transition-all duration-300 rounded-xl text-base" 
+                />
               </div>
             </div>
 
             {/* Navigation centrale */}
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'home' ? 'bg-primary/10 text-primary' : ''}`} onClick={() => handleSectionChange('home')}>
-                <Home className="w-5 h-5" />
+            <div className="flex items-center space-x-2 bg-muted/20 rounded-xl p-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`px-4 py-2 transition-all duration-300 rounded-lg ${
+                  currentSection === 'home' 
+                    ? 'bg-primary text-primary-foreground shadow-md' 
+                    : 'hover:bg-primary/10 hover:text-primary'
+                }`} 
+                onClick={() => handleSectionChange('home')}
+              >
+                <Home className="w-4 h-4 mr-2" />
+                Accueil
               </Button>
-              <Button variant="ghost" size="sm" className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'users' ? 'bg-primary/10 text-primary' : ''}`} onClick={() => handleSectionChange('users')}>
-                <Users className="w-5 h-5" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`px-4 py-2 transition-all duration-300 rounded-lg ${
+                  currentSection === 'users' 
+                    ? 'bg-primary text-primary-foreground shadow-md' 
+                    : 'hover:bg-primary/10 hover:text-primary'
+                }`} 
+                onClick={() => handleSectionChange('users')}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Réseau
               </Button>
-              <Button variant="ghost" size="sm" className={`p-3 hover:bg-primary/10 hover:text-primary transition-all duration-200 ${currentSection === 'artisans' ? 'bg-primary/10 text-primary' : ''}`} onClick={() => handleSectionChange('artisans')}>
-                <Hammer className="w-5 h-5" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`px-4 py-2 transition-all duration-300 rounded-lg ${
+                  currentSection === 'artisans' 
+                    ? 'bg-primary text-primary-foreground shadow-md' 
+                    : 'hover:bg-primary/10 hover:text-primary'
+                }`} 
+                onClick={() => handleSectionChange('artisans')}
+              >
+                <Hammer className="w-4 h-4 mr-2" />
+                Artisans
               </Button>
             </div>
 
             {/* Actions utilisateur */}
-            <div className="flex items-center space-x-3 flex-1 justify-end">
+            <div className="flex items-center space-x-4 flex-1 justify-end">
               <NotificationsPanel>
-                <Button variant="ghost" size="sm" className="p-2 hover:bg-primary/10 transition-all duration-200">
+                <Button variant="ghost" size="lg" className="relative p-3 hover:bg-primary/10 transition-all duration-300 rounded-xl">
                   <Bell className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full animate-pulse"></span>
                 </Button>
               </NotificationsPanel>
               
               <MessagesPanel>
-                <Button variant="ghost" size="sm" className="p-2 hover:bg-primary/10 transition-all duration-200">
+                <Button variant="ghost" size="lg" className="p-3 hover:bg-primary/10 transition-all duration-300 rounded-xl">
                   <MessageCircle className="w-5 h-5" />
                 </Button>
               </MessagesPanel>
               
               <CreatePostDialog>
-                <Button className="btn-gradient">
+                <Button className="bg-gradient-brand text-white font-semibold px-6 py-3 rounded-xl hover:shadow-glow hover:scale-105 transition-all duration-300">
                   <Plus className="w-4 h-4 mr-2" />
                   Publier
                 </Button>
               </CreatePostDialog>
               
               <UserProfileMenu>
-                <Avatar className="w-9 h-9 hover-scale cursor-pointer border-2 border-primary/20">
+                <Avatar className="w-11 h-11 hover-scale cursor-pointer border-3 border-primary/30 shadow-md">
                   <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback className="bg-gradient-brand text-white font-semibold">U</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-brand text-white font-bold text-lg">U</AvatarFallback>
                 </Avatar>
               </UserProfileMenu>
             </div>
@@ -263,7 +306,7 @@ const Index = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Mobile Content */}
         <div className="md:hidden">
           {currentSection === 'search' ? <SearchMobile onShortcutClick={handleShortcutClick} onFollowArtisan={handleFollowArtisan} followedArtisans={followedArtisans} /> : <div className="space-y-4 pb-20">

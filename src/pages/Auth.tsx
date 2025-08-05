@@ -216,14 +216,25 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse-glow"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-info/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1s' }}></div>
+      </div>
+      
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="mb-4">
+            <div className="w-16 h-16 bg-gradient-brand rounded-2xl mx-auto flex items-center justify-center shadow-glow mb-4">
+              <span className="text-2xl font-bold text-white">A</span>
+            </div>
+          </div>
           <h1 className="text-4xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent mb-2">
             Alifa
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-lg">
             {isResetPassword 
               ? "Réinitialisez votre mot de passe" 
               : isLogin 
@@ -233,27 +244,35 @@ const Auth = () => {
           </p>
         </div>
 
-        <Card className="card-enhanced">
-          <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl font-poppins font-semibold text-center">
+        <Card className="glass backdrop-blur-xl border-white/20 shadow-large animate-scale-in">
+          <CardHeader className="space-y-1 pb-6 text-center">
+            <CardTitle className="text-3xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent">
               {isResetPassword ? "Mot de passe oublié" : isLogin ? "Connexion" : "Inscription"}
             </CardTitle>
+            <p className="text-muted-foreground/80">
+              {isResetPassword 
+                ? "Entrez votre email pour recevoir un lien de réinitialisation" 
+                : isLogin 
+                  ? "Accédez à votre espace artisan" 
+                  : "Créez votre profil artisan"
+              }
+            </p>
           </CardHeader>
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && !isResetPassword && (
-                <div className="space-y-2">
-                  <Label htmlFor="displayName" className="text-sm font-medium">
+                  <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                  <Label htmlFor="displayName" className="text-sm font-semibold text-foreground">
                     Nom d'affichage
                   </Label>
-                  <div className="relative">
-                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <div className="relative group">
+                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 group-focus-within:text-primary transition-colors" />
                     <Input
                       id="displayName"
                       type="text"
-                      placeholder="Votre nom"
-                      className="pl-10"
+                      placeholder="Votre nom d'artisan"
+                      className="pl-10 h-12 bg-muted/30 border-border/50 focus:bg-card/80 focus:border-primary/50 transition-all duration-300 rounded-xl"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       required={!isLogin}
@@ -262,17 +281,17 @@ const Auth = () => {
                 </div>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
+              <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                  Adresse email
                 </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <div className="relative group">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 group-focus-within:text-primary transition-colors" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="votre@email.com"
-                    className="pl-10"
+                    className="pl-10 h-12 bg-muted/30 border-border/50 focus:bg-card/80 focus:border-primary/50 transition-all duration-300 rounded-xl"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -281,17 +300,17 @@ const Auth = () => {
               </div>
 
               {!isResetPassword && (
-                <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
+                <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <Label htmlFor="password" className="text-sm font-semibold text-foreground">
                   Mot de passe
                 </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <div className="relative group">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 group-focus-within:text-primary transition-colors" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-12 h-12 bg-muted/30 border-border/50 focus:bg-card/80 focus:border-primary/50 transition-all duration-300 rounded-xl"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -300,13 +319,13 @@ const Auth = () => {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-lg hover:bg-muted/50 transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-muted-foreground" />
+                      <EyeOff className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                     ) : (
-                      <Eye className="w-4 h-4 text-muted-foreground" />
+                      <Eye className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                     )}
                   </Button>
                 </div>
@@ -315,25 +334,33 @@ const Auth = () => {
 
               <Button
                 type="submit"
-                className="w-full btn-gradient"
+                className="w-full h-12 bg-gradient-brand text-white font-semibold rounded-xl hover:shadow-glow hover:scale-[1.02] transition-all duration-300 animate-fade-in"
+                style={{ animationDelay: '0.4s' }}
                 disabled={loading}
               >
                 {loading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>{isLogin ? "Connexion..." : "Inscription..."}</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <span>
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="text-lg">
                       {isResetPassword 
-                        ? "Envoyer l'email" 
+                        ? "Envoi en cours..." 
                         : isLogin 
-                          ? "Se connecter" 
-                          : "S'inscrire"
+                          ? "Connexion..." 
+                          : "Création du compte..."
                       }
                     </span>
-                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-3">
+                    <span className="text-lg">
+                      {isResetPassword 
+                        ? "Envoyer le lien" 
+                        : isLogin 
+                          ? "Se connecter" 
+                          : "Créer mon compte"
+                      }
+                    </span>
+                    <ArrowRight className="w-5 h-5" />
                   </div>
                 )}
               </Button>
@@ -381,18 +408,26 @@ const Auth = () => {
         </Card>
 
         {/* Features */}
-        <div className="mt-8 space-y-3">
-          <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
-            <span>Connectez-vous avec des artisans locaux</span>
-          </div>
-          <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
-            <span>Partagez vos créations et savoir-faire</span>
-          </div>
-          <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
-            <span>Développez votre activité artisanale</span>
+        <div className="mt-8 space-y-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <div className="grid grid-cols-1 gap-3">
+            <div className="flex items-center space-x-4 p-3 rounded-xl bg-success/5 border border-success/20 backdrop-blur-sm">
+              <div className="w-8 h-8 bg-success/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-4 h-4 text-success" />
+              </div>
+              <span className="text-sm font-medium text-foreground">Connectez-vous avec des artisans locaux</span>
+            </div>
+            <div className="flex items-center space-x-4 p-3 rounded-xl bg-info/5 border border-info/20 backdrop-blur-sm">
+              <div className="w-8 h-8 bg-info/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-4 h-4 text-info" />
+              </div>
+              <span className="text-sm font-medium text-foreground">Partagez vos créations et savoir-faire</span>
+            </div>
+            <div className="flex items-center space-x-4 p-3 rounded-xl bg-primary/5 border border-primary/20 backdrop-blur-sm">
+              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-sm font-medium text-foreground">Développez votre activité artisanale</span>
+            </div>
           </div>
         </div>
       </div>
