@@ -147,31 +147,31 @@ export const NetworkSection = ({ onFollowUser, followedUsers }: NetworkSectionPr
     <div className="space-y-6">
       {/* Header Section */}
       <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0">
           <div>
-            <h1 className="text-3xl font-poppins font-bold">Mon Réseau</h1>
-            <p className="text-muted-foreground">Découvrez et connectez-vous avec des artisans talentueux</p>
+            <h1 className="text-2xl md:text-3xl font-poppins font-bold">Mon Réseau</h1>
+            <p className="text-muted-foreground text-sm md:text-base">Découvrez et connectez-vous avec des artisans talentueux</p>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
-              Filtres
+            <Button variant="outline" size="sm" className="text-xs md:text-sm">
+              <Filter className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Filtres</span>
             </Button>
-            <Button variant="outline" size="sm">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Tendances
+            <Button variant="outline" size="sm" className="text-xs md:text-sm">
+              <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Tendances</span>
             </Button>
           </div>
         </div>
 
         {/* Search Bar */}
-        <div className="relative max-w-md">
+        <div className="relative w-full md:max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder="Rechercher dans votre réseau..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-muted/20 border-border/40"
+            className="pl-10 bg-muted/20 border-border/40 w-full"
           />
         </div>
       </div>
@@ -245,15 +245,15 @@ export const NetworkSection = ({ onFollowUser, followedUsers }: NetworkSectionPr
         </TabsList>
 
         <TabsContent value="suggestions" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {filteredSuggestions.map((user, index) => (
               <Card key={index} className="card-enhanced hover:shadow-glow transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-start space-x-3 md:space-x-4">
                     <div className="relative">
-                      <Avatar className="w-16 h-16 ring-2 ring-primary/20">
+                      <Avatar className="w-12 h-12 md:w-16 md:h-16 ring-2 ring-primary/20">
                         <AvatarImage src={user.avatar} />
-                        <AvatarFallback className="bg-gradient-brand text-white font-bold text-lg">
+                        <AvatarFallback className="bg-gradient-brand text-white font-bold text-sm md:text-lg">
                           {user.name[0]}
                         </AvatarFallback>
                       </Avatar>

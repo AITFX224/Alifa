@@ -201,4 +201,34 @@ All colors MUST be HSL.
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
+
+  /* Mobile responsive improvements */
+  @media (max-width: 640px) {
+    .text-responsive {
+      @apply text-sm;
+    }
+    
+    .card-mobile {
+      @apply p-4;
+    }
+    
+    .grid-mobile {
+      @apply grid-cols-1 gap-3;
+    }
+    
+    .spacing-mobile {
+      @apply space-y-3;
+    }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .tablet-cols-2 {
+      @apply md:grid-cols-2;
+    }
+    
+    .tablet-spacing {
+      @apply md:space-y-4;
+    }
+  }
 }

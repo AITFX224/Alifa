@@ -336,7 +336,35 @@ const Index = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Mobile Content */}
         <div className="md:hidden">
-          {currentSection === 'search' ? <SearchMobile onShortcutClick={handleShortcutClick} onFollowArtisan={handleFollowArtisan} followedArtisans={followedArtisans} /> : <div className="space-y-4 pb-20">
+          {currentSection === 'search' && (
+            <SearchMobile 
+              onShortcutClick={handleShortcutClick} 
+              onFollowArtisan={handleFollowArtisan} 
+              followedArtisans={followedArtisans} 
+            />
+          )}
+          
+          {currentSection === 'users' && (
+            <div className="pb-20">
+              <NetworkSection 
+                onFollowUser={handleFollowArtisan}
+                followedUsers={followedArtisans}
+              />
+            </div>
+          )}
+          
+          {currentSection === 'artisans' && (
+            <div className="pb-20">
+              <ArtisansSection 
+                onContactArtisan={handleContactArtisan}
+                onLikeArtisan={handleLikeArtisan}
+                likedArtisans={likedArtisans}
+              />
+            </div>
+          )}
+          
+          {currentSection === 'home' && (
+            <div className="space-y-4 pb-20">
               {/* Mobile Create Post */}
               <Card className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl">
                 <CardContent className="p-4">
@@ -355,12 +383,21 @@ const Index = () => {
               </Card>
 
               {/* Mobile Posts */}
-              {posts.map((post, index) => <div key={post.id} className="animate-fade-in" style={{
-            animationDelay: `${0.1 * index}s`
-          }}>
-                  <MobilePostCard post={post} isLiked={likedPosts.has(post.id)} onLike={() => handleLikePost(post.id)} onComment={() => handleCommentPost(post.id)} onShare={() => handleSharePost(post.id)} />
-                </div>)}
-            </div>}
+              {posts.map((post, index) => (
+                <div key={post.id} className="animate-fade-in" style={{
+                  animationDelay: `${0.1 * index}s`
+                }}>
+                  <MobilePostCard 
+                    post={post} 
+                    isLiked={likedPosts.has(post.id)} 
+                    onLike={() => handleLikePost(post.id)} 
+                    onComment={() => handleCommentPost(post.id)} 
+                    onShare={() => handleSharePost(post.id)} 
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Desktop Layout - Hidden on mobile */}

@@ -374,16 +374,17 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
     <div className="space-y-6">
       {/* Header Section */}
       <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0">
           <div>
-            <h1 className="text-3xl font-poppins font-bold">Artisans de Guinée</h1>
-            <p className="text-muted-foreground">Découvrez les meilleurs artisans qualifiés près de chez vous</p>
+            <h1 className="text-2xl md:text-3xl font-poppins font-bold">Artisans de Guinée</h1>
+            <p className="text-muted-foreground text-sm md:text-base">Découvrez les meilleurs artisans qualifiés près de chez vous</p>
           </div>
           <div className="flex items-center space-x-2">
             <Button
               variant={viewMode === "grid" ? "default" : "outline"}
               size="sm"
               onClick={() => setViewMode("grid")}
+              className="hidden sm:flex"
             >
               <Grid className="w-4 h-4" />
             </Button>
@@ -391,6 +392,7 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
               variant={viewMode === "list" ? "default" : "outline"}
               size="sm"
               onClick={() => setViewMode("list")}
+              className="hidden sm:flex"
             >
               <List className="w-4 h-4" />
             </Button>
@@ -398,69 +400,75 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
-              placeholder="Rechercher un artisan, métier, spécialité..."
+              placeholder="Rechercher un artisan..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-muted/20 border-border/40"
+              className="pl-10 bg-muted/20 border-border/40 text-sm md:text-base"
             />
           </div>
           
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-full md:w-48 bg-muted/20">
+            <SelectTrigger className="w-full sm:w-40 md:w-48 bg-muted/20 text-sm md:text-base">
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
             <SelectContent>
               {categories.map(category => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.icon} {category.name} ({category.count})
+                <SelectItem key={category.id} value={category.id} className="text-sm">
+                  <span className="mr-2">{category.icon}</span>
+                  <span className="hidden sm:inline">{category.name}</span>
+                  <span className="sm:hidden">{category.name.split(' ')[0]}</span>
+                  <span className="text-xs text-muted-foreground ml-1">({category.count})</span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-            <SelectTrigger className="w-full md:w-40 bg-muted/20">
-              <SelectValue placeholder="Localisation" />
+           <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+            <SelectTrigger className="w-full sm:w-32 md:w-40 bg-muted/20 text-sm md:text-base">
+              <SelectValue placeholder="Lieu" />
             </SelectTrigger>
             <SelectContent>
               {locations.map(location => (
-                <SelectItem key={location.id} value={location.id}>
-                  {location.name}
+                <SelectItem key={location.id} value={location.id} className="text-sm">
+                  <span className="hidden sm:inline">{location.name}</span>
+                  <span className="sm:hidden">{location.name.split(' ')[0]}</span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-40 bg-muted/20">
-              <SelectValue placeholder="Trier par" />
+            <SelectTrigger className="w-full sm:w-32 md:w-40 bg-muted/20 text-sm md:text-base">
+              <SelectValue placeholder="Tri" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rating">Note</SelectItem>
-              <SelectItem value="reviews">Avis</SelectItem>
-              <SelectItem value="projects">Projets</SelectItem>
-              <SelectItem value="name">Nom</SelectItem>
+              <SelectItem value="rating" className="text-sm">Note</SelectItem>
+              <SelectItem value="reviews" className="text-sm">Avis</SelectItem>
+              <SelectItem value="projects" className="text-sm">Projets</SelectItem>
+              <SelectItem value="name" className="text-sm">Nom</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       {/* Categories Quick Access */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 md:gap-3">
         {categories.slice(1).map((category) => (
           <Button
             key={category.id}
             variant={selectedCategory === category.id ? "default" : "outline"}
             size="sm"
-            className="flex flex-col h-auto p-3 space-y-1"
+            className="flex flex-col h-auto p-2 md:p-3 space-y-1"
             onClick={() => setSelectedCategory(category.id)}
           >
-            <span className="text-lg">{category.icon}</span>
-            <span className="text-xs font-medium">{category.name.split(' ')[0]}</span>
+            <span className="text-base md:text-lg">{category.icon}</span>
+            <span className="text-xs font-medium leading-tight text-center">
+              {category.name.split(' ')[0]}
+            </span>
             <span className="text-xs text-muted-foreground">{category.count}</span>
           </Button>
         ))}
@@ -474,7 +482,7 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
       </div>
 
       {/* Artisans Grid/List */}
-      <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
+      <div className={`grid gap-4 md:gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
         {sortedArtisans.map((artisan, index) => (
           <ArtisanCard key={artisan.id} artisan={artisan} index={index} />
         ))}
