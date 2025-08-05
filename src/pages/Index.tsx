@@ -335,7 +335,7 @@ const Index = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Mobile Content */}
-        <div className="md:hidden">
+        <div className="md:hidden safe-area-pt">
           {currentSection === 'search' && (
             <SearchMobile 
               onShortcutClick={handleShortcutClick} 
@@ -345,7 +345,7 @@ const Index = () => {
           )}
           
           {currentSection === 'users' && (
-            <div className="pb-20">
+            <div className="pb-20 safe-area-pb">
               <NetworkSection 
                 onFollowUser={handleFollowArtisan}
                 followedUsers={followedArtisans}
@@ -354,7 +354,7 @@ const Index = () => {
           )}
           
           {currentSection === 'artisans' && (
-            <div className="pb-20">
+            <div className="pb-20 safe-area-pb">
               <ArtisansSection 
                 onContactArtisan={handleContactArtisan}
                 onLikeArtisan={handleLikeArtisan}
@@ -364,17 +364,32 @@ const Index = () => {
           )}
           
           {currentSection === 'home' && (
-            <div className="space-y-4 pb-20">
-              {/* Mobile Create Post */}
-              <Card className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl">
+            <div className="space-y-3 pb-20 safe-area-pb">
+              {/* Welcome Message for Mobile */}
+              <Card className="bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm border border-primary/20 rounded-xl mx-3">
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
+                    <div className="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-semibold text-foreground">Bienvenue sur Zonaya</h2>
+                      <p className="text-xs text-muted-foreground">Découvrez les meilleurs artisans</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Mobile Create Post */}
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl mx-3">
+                <CardContent className="p-3">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-9 h-9">
                       <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
+                      <AvatarFallback className="bg-gradient-brand text-white text-sm">Z</AvatarFallback>
                     </Avatar>
                     <CreatePostDialog>
-                      <Button variant="outline" className="flex-1 justify-start text-muted-foreground bg-muted/20 border-dashed h-12 text-base">
+                      <Button variant="outline" className="flex-1 justify-start text-muted-foreground bg-muted/20 border-dashed h-10 text-sm touch-target">
                         Que voulez-vous partager ?
                       </Button>
                     </CreatePostDialog>
@@ -383,19 +398,21 @@ const Index = () => {
               </Card>
 
               {/* Mobile Posts */}
-              {posts.map((post, index) => (
-                <div key={post.id} className="animate-fade-in" style={{
-                  animationDelay: `${0.1 * index}s`
-                }}>
-                  <MobilePostCard 
-                    post={post} 
-                    isLiked={likedPosts.has(post.id)} 
-                    onLike={() => handleLikePost(post.id)} 
-                    onComment={() => handleCommentPost(post.id)} 
-                    onShare={() => handleSharePost(post.id)} 
-                  />
-                </div>
-              ))}
+              <div className="px-3 space-y-3">
+                {posts.map((post, index) => (
+                  <div key={post.id} className="animate-fade-in" style={{
+                    animationDelay: `${0.1 * index}s`
+                  }}>
+                    <MobilePostCard 
+                      post={post} 
+                      isLiked={likedPosts.has(post.id)} 
+                      onLike={() => handleLikePost(post.id)} 
+                      onComment={() => handleCommentPost(post.id)} 
+                      onShare={() => handleSharePost(post.id)} 
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

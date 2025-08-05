@@ -14,38 +14,38 @@ export const MobileNavigation = ({ currentSection, onSectionChange }: MobileNavi
   return (
     <>
       {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border/50 px-4 py-2 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/98 backdrop-blur-xl border-t border-border/50 px-2 py-1 md:hidden safe-area-pb">
         <div className="flex items-center justify-around max-w-md mx-auto">
           <Button
             variant="ghost"
             size="sm"
-            className={`flex flex-col items-center space-y-1 p-3 ${
-              currentSection === 'home' ? 'text-primary' : 'text-muted-foreground'
+            className={`flex flex-col items-center space-y-1 p-2 min-w-[60px] ${
+              currentSection === 'home' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
             }`}
             onClick={() => onSectionChange('home')}
           >
-            <Home className="w-5 h-5" />
-            <span className="text-xs">Accueil</span>
+            <Home className="w-4 h-4" />
+            <span className="text-xs font-medium">Accueil</span>
           </Button>
 
           <Button
             variant="ghost"
             size="sm"
-            className={`flex flex-col items-center space-y-1 p-3 ${
-              currentSection === 'search' ? 'text-primary' : 'text-muted-foreground'
+            className={`flex flex-col items-center space-y-1 p-2 min-w-[60px] ${
+              currentSection === 'search' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
             }`}
             onClick={() => onSectionChange('search')}
           >
-            <Search className="w-5 h-5" />
-            <span className="text-xs">Recherche</span>
+            <Search className="w-4 h-4" />
+            <span className="text-xs font-medium">Recherche</span>
           </Button>
 
           <CreatePostDialog>
             <Button
               size="sm"
-              className="bg-primary text-primary-foreground rounded-full w-12 h-12 p-0"
+              className="bg-primary text-primary-foreground rounded-full w-10 h-10 p-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
-              <Plus className="w-6 h-6" />
+              <Plus className="w-5 h-5" />
             </Button>
           </CreatePostDialog>
 
