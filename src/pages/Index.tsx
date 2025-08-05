@@ -15,6 +15,8 @@ import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { MobilePostCard } from "@/components/MobilePostCard";
 import { SearchMobile } from "@/components/SearchMobile";
+import { NetworkSection } from "@/components/NetworkSection";
+import { ArtisansSection } from "@/components/ArtisansSection";
 const Index = () => {
   const {
     toast
@@ -32,6 +34,7 @@ const Index = () => {
   }, [user, loading, navigate]);
   const [followedArtisans, setFollowedArtisans] = useState<Set<string>>(new Set());
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const [likedArtisans, setLikedArtisans] = useState<Set<string>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
   const [posts, setPosts] = useState([{
     id: 1,
@@ -193,6 +196,30 @@ const Index = () => {
       description: `Affichage de tous les ${shortcutName.toLowerCase()}`
     });
   };
+
+  const handleContactArtisan = (artisanName: string) => {
+    toast({
+      title: "Contact initié",
+      description: `Ouverture de la conversation avec ${artisanName}`
+    });
+  };
+
+  const handleLikeArtisan = (artisanId: string) => {
+    const isLiked = likedArtisans.has(artisanId);
+    const newLikedArtisans = new Set(likedArtisans);
+    
+    if (isLiked) {
+      newLikedArtisans.delete(artisanId);
+    } else {
+      newLikedArtisans.add(artisanId);
+    }
+    
+    setLikedArtisans(newLikedArtisans);
+    toast({
+      title: isLiked ? "Like retiré" : "Artisan aimé !",
+      description: isLiked ? "Vous n'aimez plus cet artisan" : "Artisan ajouté à vos favoris"
+    });
+  };
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center space-y-4">
@@ -337,209 +364,241 @@ const Index = () => {
         </div>
 
         {/* Desktop Layout - Hidden on mobile */}
-        <div className="hidden md:grid grid-cols-12 gap-6">
-          {/* Sidebar gauche */}
-          <div className="col-span-3 space-y-6">
-            <Card className="card-enhanced animate-fade-in">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-poppins font-semibold text-lg">Raccourcis</h3>
-                  <TrendingUp className="w-4 h-4 text-success" />
-                </div>
-                <div className="space-y-3">
-                  {shortcuts.map((shortcut, index) => <Button key={index} variant="ghost" className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group" onClick={() => handleShortcutClick(shortcut.name)}>
-                      <div className="flex items-center">
-                        <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
-                        <div className="text-left">
-                          <div className="font-medium text-sm">{shortcut.name}</div>
-                          <div className="text-xs text-muted-foreground">{shortcut.count} artisans</div>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
-                        {shortcut.trend}
-                      </Badge>
-                    </Button>)}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Fil d'actualité central */}
-          <div className="col-span-6 space-y-6">
-            {/* Créer une publication */}
-            <Card className="card-enhanced animate-slide-up">
-              <CardContent className="p-5">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="w-11 h-11">
-                    <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
-                  </Avatar>
-                  <CreatePostDialog>
-                    <Button variant="outline" className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300">
-                      Que voulez-vous partager, artisan ?
-                    </Button>
-                  </CreatePostDialog>
-                </div>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-                  <CreatePostDialog>
-                    <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
-                      <Camera className="w-4 h-4 mr-2" />
-                      Photo/Vidéo
-                    </Button>
-                  </CreatePostDialog>
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
-                  title: "Localisation",
-                  description: "Ajout de localisation..."
-                })}>
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Localisation
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
-                  title: "Événement",
-                  description: "Création d'événement..."
-                })}>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Événement
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Publications */}
-            {posts.map((post, index) => <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{
-            animationDelay: `${0.1 * index}s`
-          }}>
-                <CardContent className="p-0">
-                  {/* En-tête du post */}
-                  <div className="p-5 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="w-11 h-11 ring-2 ring-primary/20">
-                        <AvatarImage src={post.avatar} />
-                        <AvatarFallback className="bg-gradient-brand text-white font-semibold">
-                          {post.author[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h4 className="font-poppins font-semibold">{post.author}</h4>
-                          {post.verified && <Sparkles className="w-4 h-4 text-primary fill-primary" />}
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <span className="font-medium text-primary">{post.profession}</span>
-                          <span className="mx-2">•</span>
-                          <MapPin className="w-3 h-3 mr-1" />
-                          <span>{post.location}</span>
-                          <span className="mx-2">•</span>
-                          <span>{post.time}</span>
-                        </div>
-                      </div>
+        <div className="hidden md:block">
+          {currentSection === "home" && (
+            <div className="grid grid-cols-12 gap-6">
+              {/* Sidebar gauche */}
+              <div className="col-span-3 space-y-6">
+                <Card className="card-enhanced animate-fade-in">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-poppins font-semibold text-lg">Raccourcis</h3>
+                      <TrendingUp className="w-4 h-4 text-success" />
                     </div>
-                    <Button variant="ghost" size="sm" className="opacity-60 hover:opacity-100 transition-opacity">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {/* Contenu */}
-                  <div className="px-5 pb-4">
-                    <p className="leading-relaxed">{post.content}</p>
-                  </div>
-
-                  {/* Image */}
-                  <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="p-5">
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center space-x-4">
-                        <span className="hover:text-destructive cursor-pointer transition-colors">
-                          {post.likes} mentions J'aime
-                        </span>
-                        <span className="hover:text-primary cursor-pointer transition-colors">
-                          {post.comments} commentaires
-                        </span>
-                        <span className="hover:text-secondary cursor-pointer transition-colors">
-                          {post.shares} partages
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center border-t border-border/50 pt-3">
-                      <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id) ? 'text-destructive bg-destructive/10' : ''}`} onClick={() => handleLikePost(post.id)}>
-                        <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id) ? 'fill-destructive' : ''}`} />
-                        J'aime
-                      </Button>
-                      <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => handleCommentPost(post.id)}>
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Commenter
-                      </Button>
-                      <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => handleSharePost(post.id)}>
-                        <Share className="w-4 h-4 mr-2" />
-                        Partager
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>)}
-          </div>
-
-          {/* Sidebar droite */}
-          <div className="col-span-3 space-y-6">
-            <Card className="card-enhanced animate-fade-in" style={{
-            animationDelay: '0.2s'
-          }}>
-              <CardContent className="p-5">
-                <h3 className="font-poppins font-semibold text-lg mb-4">Artisans suggérés</h3>
-                <div className="space-y-4">
-                  {suggestions.map((suggestion, index) => <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="w-10 h-10 ring-2 ring-primary/20">
-                          <AvatarImage src="/placeholder.svg" />
-                          <AvatarFallback className="bg-gradient-brand text-white font-semibold">
-                            {suggestion.name[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h4 className="font-semibold text-sm">{suggestion.name}</h4>
-                          <p className="text-xs text-primary font-medium">{suggestion.profession}</p>
-                          <p className="text-xs text-muted-foreground">{suggestion.location}</p>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <div className="flex items-center">
-                              <Star className="w-3 h-3 text-warning fill-warning mr-1" />
-                              <span className="text-xs font-medium">{suggestion.rating}</span>
+                    <div className="space-y-3">
+                      {shortcuts.map((shortcut, index) => (
+                        <Button
+                          key={index}
+                          variant="ghost"
+                          className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group"
+                          onClick={() => handleShortcutClick(shortcut.name)}
+                        >
+                          <div className="flex items-center">
+                            <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
+                            <div className="text-left">
+                              <div className="font-medium text-sm">{shortcut.name}</div>
+                              <div className="text-xs text-muted-foreground">{shortcut.count} artisans</div>
                             </div>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">{suggestion.mutual} amis</span>
+                          </div>
+                          <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
+                            {shortcut.trend}
+                          </Badge>
+                        </Button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Fil d'actualité central */}
+              <div className="col-span-6 space-y-6">
+                {/* Créer une publication */}
+                <Card className="card-enhanced animate-slide-up">
+                  <CardContent className="p-5">
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="w-11 h-11">
+                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
+                      </Avatar>
+                      <CreatePostDialog>
+                        <Button variant="outline" className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300">
+                          Que voulez-vous partager, artisan ?
+                        </Button>
+                      </CreatePostDialog>
+                    </div>
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
+                      <CreatePostDialog>
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                          <Camera className="w-4 h-4 mr-2" />
+                          Photo/Vidéo
+                        </Button>
+                      </CreatePostDialog>
+                      <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
+                        title: "Localisation",
+                        description: "Ajout de localisation..."
+                      })}>
+                        <MapPin className="w-4 h-4 mr-2" />
+                        Localisation
+                      </Button>
+                      <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
+                        title: "Événement",
+                        description: "Création d'événement..."
+                      })}>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Événement
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Publications */}
+                {posts.map((post, index) => (
+                  <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{
+                    animationDelay: `${0.1 * index}s`
+                  }}>
+                    <CardContent className="p-0">
+                      {/* En-tête du post */}
+                      <div className="p-5 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="w-11 h-11 ring-2 ring-primary/20">
+                            <AvatarImage src={post.avatar} />
+                            <AvatarFallback className="bg-gradient-brand text-white font-semibold">
+                              {post.author[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <h4 className="font-poppins font-semibold">{post.author}</h4>
+                              {post.verified && <Sparkles className="w-4 h-4 text-primary fill-primary" />}
+                            </div>
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <span className="font-medium text-primary">{post.profession}</span>
+                              <span className="mx-2">•</span>
+                              <MapPin className="w-3 h-3 mr-1" />
+                              <span>{post.location}</span>
+                              <span className="mx-2">•</span>
+                              <span>{post.time}</span>
+                            </div>
                           </div>
                         </div>
+                        <Button variant="ghost" size="sm" className="opacity-60 hover:opacity-100 transition-opacity">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
                       </div>
-                      <Button size="sm" variant={followedArtisans.has(suggestion.name) ? "secondary" : "default"} className="text-xs" onClick={() => handleFollowArtisan(suggestion.name)}>
-                        {followedArtisans.has(suggestion.name) ? "Suivi" : "Suivre"}
-                      </Button>
-                    </div>)}
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="card-enhanced animate-fade-in" style={{
-            animationDelay: '0.3s'
-          }}>
-              <CardContent className="p-5">
-                <h3 className="font-poppins font-semibold text-lg mb-4">Tendances</h3>
-                <div className="space-y-3">
-                  {trendingTopics.map((topic, index) => <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
-                      <div>
-                        <h4 className="font-semibold text-sm text-primary">{topic.name}</h4>
-                        <p className="text-xs text-muted-foreground">{topic.posts} publications</p>
+                      {/* Contenu */}
+                      <div className="px-5 pb-4">
+                        <p className="leading-relaxed">{post.content}</p>
                       </div>
-                      <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
-                        {topic.growth}
-                      </Badge>
-                    </div>)}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+
+                      {/* Image */}
+                      <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="p-5">
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                          <div className="flex items-center space-x-4">
+                            <span className="hover:text-destructive cursor-pointer transition-colors">
+                              {post.likes} mentions J'aime
+                            </span>
+                            <span className="hover:text-primary cursor-pointer transition-colors">
+                              {post.comments} commentaires
+                            </span>
+                            <span className="hover:text-secondary cursor-pointer transition-colors">
+                              {post.shares} partages
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center border-t border-border/50 pt-3">
+                          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id) ? 'text-destructive bg-destructive/10' : ''}`} onClick={() => handleLikePost(post.id)}>
+                            <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id) ? 'fill-destructive' : ''}`} />
+                            J'aime
+                          </Button>
+                          <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => handleCommentPost(post.id)}>
+                            <MessageCircle className="w-4 h-4 mr-2" />
+                            Commenter
+                          </Button>
+                          <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => handleSharePost(post.id)}>
+                            <Share className="w-4 h-4 mr-2" />
+                            Partager
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Sidebar droite */}
+              <div className="col-span-3 space-y-6">
+                <Card className="card-enhanced animate-fade-in" style={{
+                  animationDelay: '0.2s'
+                }}>
+                  <CardContent className="p-5">
+                    <h3 className="font-poppins font-semibold text-lg mb-4">Artisans suggérés</h3>
+                    <div className="space-y-4">
+                      {suggestions.map((suggestion, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
+                          <div className="flex items-center space-x-3">
+                            <Avatar className="w-10 h-10 ring-2 ring-primary/20">
+                              <AvatarImage src="/placeholder.svg" />
+                              <AvatarFallback className="bg-gradient-brand text-white font-semibold">
+                                {suggestion.name[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <h4 className="font-semibold text-sm">{suggestion.name}</h4>
+                              <p className="text-xs text-primary font-medium">{suggestion.profession}</p>
+                              <p className="text-xs text-muted-foreground">{suggestion.location}</p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <div className="flex items-center">
+                                  <Star className="w-3 h-3 text-warning fill-warning mr-1" />
+                                  <span className="text-xs font-medium">{suggestion.rating}</span>
+                                </div>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <span className="text-xs text-muted-foreground">{suggestion.mutual} amis</span>
+                              </div>
+                            </div>
+                          </div>
+                          <Button size="sm" variant={followedArtisans.has(suggestion.name) ? "secondary" : "default"} className="text-xs" onClick={() => handleFollowArtisan(suggestion.name)}>
+                            {followedArtisans.has(suggestion.name) ? "Suivi" : "Suivre"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="card-enhanced animate-fade-in" style={{
+                  animationDelay: '0.3s'
+                }}>
+                  <CardContent className="p-5">
+                    <h3 className="font-poppins font-semibold text-lg mb-4">Tendances</h3>
+                    <div className="space-y-3">
+                      {trendingTopics.map((topic, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
+                          <div>
+                            <h4 className="font-semibold text-sm text-primary">{topic.name}</h4>
+                            <p className="text-xs text-muted-foreground">{topic.posts} publications</p>
+                          </div>
+                          <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
+                            {topic.growth}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {currentSection === "users" && (
+            <NetworkSection 
+              onFollowUser={handleFollowArtisan}
+              followedUsers={followedArtisans}
+            />
+          )}
+
+          {currentSection === "artisans" && (
+            <ArtisansSection 
+              onContactArtisan={handleContactArtisan}
+              onLikeArtisan={handleLikeArtisan}
+              likedArtisans={likedArtisans}
+            />
+          )}
         </div>
       </div>
     </div>;
