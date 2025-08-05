@@ -221,7 +221,7 @@ const Auth = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent mb-2">
-            Zonaya
+            Alifa
           </h1>
           <p className="text-muted-foreground">
             {isResetPassword 
