@@ -231,7 +231,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="text-xl font-poppins font-semibold">Créer une publication</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Partagez votre travail, vos créations ou vos services avec la communauté Zonaya
+            Partagez votre travail, vos créations ou vos services avec la communauté Alifa
           </DialogDescription>
         </DialogHeader>
         

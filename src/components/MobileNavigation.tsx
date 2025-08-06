@@ -81,7 +81,7 @@ export const MobileNavigation = ({ currentSection, onSectionChange }: MobileNavi
       <div className="md:hidden sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent">
-            Zonaya
+            Alifa
           </h1>
           
           <div className="flex items-center space-x-3">

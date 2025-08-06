@@ -80,7 +80,7 @@ const Auth = () => {
       } else {
         toast({
           title: "Inscription réussie !",
-          description: "Bienvenue sur Zonaya !",
+          description: "Bienvenue sur Alifa !",
         });
       }
     } catch (error: any) {
@@ -122,7 +122,7 @@ const Auth = () => {
 
       toast({
         title: "Connexion réussie !",
-        description: "Bon retour sur Zonaya !",
+        description: "Bon retour sur Alifa !",
       });
     } catch (error: any) {
       console.error("🔴 Erreur connexion:", error);
@@ -428,6 +428,20 @@ const Auth = () => {
               </div>
               <span className="text-sm font-medium text-foreground">Développez votre activité artisanale</span>
             </div>
+            {!isLogin && !isResetPassword && (
+              <div className="flex items-center space-x-4 p-3 rounded-xl bg-warning/5 border border-warning/20 backdrop-blur-sm">
+                <div className="w-8 h-8 bg-warning/20 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4 text-warning" />
+                </div>
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-medium text-warning hover:text-warning/80 text-sm"
+                  onClick={() => navigate('/become-artisan')}
+                >
+                  Devenir artisan - Commencez votre activité
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -319,7 +319,7 @@ const Index = () => {
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-base font-semibold text-foreground">Bienvenue sur Zonaya</h2>
+                      <h2 className="text-base font-semibold text-foreground">Bienvenue sur Alifa</h2>
                       <p className="text-xs text-muted-foreground">Découvrez les meilleurs artisans</p>
                     </div>
                   </div>

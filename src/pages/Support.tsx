@@ -90,7 +90,7 @@ const Support = () => {
     },
     {
       title: "Email",
-      description: "support@zonaya.com",
+      description: "support@alifa.com",
       icon: <Mail className="w-6 h-6" />,
       action: "Envoyer un email",
       available: "Réponse sous 24h"

@@ -27,7 +27,7 @@ export function UserProfileMenu({
       await signOut();
       toast({
         title: "Déconnexion réussie",
-        description: "À bientôt sur Zonaya !"
+        description: "À bientôt sur Alifa !"
       });
     } catch (error) {
       toast({
