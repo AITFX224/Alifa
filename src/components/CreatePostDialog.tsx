@@ -53,6 +53,17 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
 
     setUploading(true);
     try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour publier.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Upload media files to Supabase Storage
       const uploadedMediaUrls = [];
       for (const media of mediaFiles) {
@@ -70,7 +81,22 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
         uploadedMediaUrls.push(publicUrl);
       }
 
-      // Simuler la publication avec les médias uploadés
+      // Create post in database
+      const { error: postError } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          content: content.trim(),
+          media_urls: uploadedMediaUrls.length > 0 ? uploadedMediaUrls : null,
+          location: selectedLocation || null,
+          event_title: event?.title || null,
+          event_date: event?.date || null,
+          event_time: event?.time || null,
+          event_description: event?.description || null
+        });
+
+      if (postError) throw postError;
+
       toast({
         title: "Publication créée !",
         description: `Votre publication a été partagée avec succès${uploadedMediaUrls.length > 0 ? ` avec ${uploadedMediaUrls.length} fichier(s)` : ''}.`,
@@ -86,10 +112,10 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
       setShowEventForm(false);
       setOpen(false);
     } catch (error) {
-      console.error('Erreur lors de l\'upload:', error);
+      console.error('Erreur lors de la publication:', error);
       toast({
         title: "Erreur",
-        description: "Erreur lors de l'upload des fichiers. Veuillez réessayer.",
+        description: "Erreur lors de la publication. Veuillez réessayer.",
         variant: "destructive"
       });
     } finally {
