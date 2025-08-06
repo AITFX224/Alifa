@@ -65,7 +65,7 @@ export function UserProfileMenu({
             </Avatar>
             <div>
               
-              <p className="text-sm text-muted-foreground">utilisateur@zonaya.com</p>
+              <p className="text-sm text-muted-foreground">Berete</p>
             </div>
           </div>
         </div>
