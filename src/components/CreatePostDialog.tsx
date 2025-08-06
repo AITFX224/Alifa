@@ -67,7 +67,13 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
       // Upload media files to Supabase Storage
       const uploadedMediaUrls = [];
       for (const media of mediaFiles) {
-        const fileName = `${Date.now()}_${media.file.name}`;
+        // Sanitize filename: remove spaces, special characters, and normalize
+        const sanitizedName = media.file.name
+          .replace(/[^a-zA-Z0-9.-]/g, '_') // Replace special chars with underscore
+          .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+          .toLowerCase(); // Convert to lowercase
+        
+        const fileName = `${Date.now()}_${sanitizedName}`;
         const { data, error } = await supabase.storage
           .from('posts-media')
           .upload(fileName, media.file);
