@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { AvatarUpload } from "@/components/AvatarUpload";
 
 const Profile = () => {
   const { toast } = useToast();
@@ -20,7 +21,8 @@ const Profile = () => {
     location: "",
     phone: "",
     website: "",
-    email: user?.email || ""
+    email: user?.email || "",
+    avatarUrl: ""
   });
   const [loading, setLoading] = useState(true);
 
@@ -43,8 +45,16 @@ const Profile = () => {
             location: data.location || "",
             phone: data.phone || "",
             website: data.website || "",
-            email: user.email || ""
+            email: user.email || "",
+            avatarUrl: data.avatar_url || ""
           });
+        } else {
+          // Si pas de profil existant, utiliser les métadonnées de l'utilisateur
+          setProfileData(prev => ({
+            ...prev,
+            displayName: user.user_metadata?.display_name || "",
+            email: user.email || ""
+          }));
         }
       } catch (error) {
         console.error('Erreur lors du chargement du profil:', error);
@@ -121,6 +131,13 @@ const Profile = () => {
     );
   }
 
+  const handleAvatarUpdate = (newAvatarUrl: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      avatarUrl: newAvatarUrl
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -141,27 +158,13 @@ const Profile = () => {
         <Card className="card-enhanced">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              {/* Avatar */}
-              <div className="relative">
-                <Avatar className="w-32 h-32 ring-4 ring-primary/20">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback className="bg-gradient-brand text-white text-2xl font-bold">
-                    {profileData.displayName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                {isEditing && (
-                  <Button
-                    size="sm"
-                    className="absolute bottom-0 right-0 rounded-full w-10 h-10 p-0"
-                    onClick={() => toast({
-                      title: "Changer la photo",
-                      description: "Fonctionnalité à venir"
-                    })}
-                  >
-                    <Camera className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
+              {/* Avatar avec upload */}
+              <AvatarUpload
+                currentAvatarUrl={profileData.avatarUrl}
+                displayName={profileData.displayName}
+                onAvatarUpdate={handleAvatarUpdate}
+                isEditing={isEditing}
+              />
 
               {/* Informations */}
               <div className="flex-1 space-y-4 w-full">
