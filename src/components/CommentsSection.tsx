@@ -8,6 +8,8 @@ import { useComments, Comment } from "@/hooks/useComments";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { sanitizeContent, rateLimiter } from "@/lib/security";
+import { commentSchema } from "@/lib/validation";
 
 interface CommentsSectionProps {
   postId: string;
@@ -22,7 +24,23 @@ export const CommentsSection = ({ postId, isOpen, onToggle }: CommentsSectionPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await addComment(newComment);
+    
+    if (!user) return;
+
+    // Rate limiting
+    if (!rateLimiter.isAllowed(`comment_${user.id}`, 10, 60000)) {
+      return;
+    }
+
+    // Validate comment
+    try {
+      commentSchema.parse({ content: newComment.trim() });
+    } catch (error) {
+      return;
+    }
+
+    const sanitizedComment = sanitizeContent(newComment);
+    const success = await addComment(sanitizedComment);
     if (success) {
       setNewComment("");
     }

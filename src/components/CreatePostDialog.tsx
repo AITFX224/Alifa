@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sanitizeContent, validateFileType, validateFileSize, validateFileSignature, sanitizeFilename, rateLimiter } from "@/lib/security";
+import { createPostSchema, type CreatePostData } from "@/lib/validation";
 
 interface CreatePostDialogProps {
   children: React.ReactNode;
@@ -42,6 +44,48 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
   const { toast } = useToast();
 
   const handlePost = async () => {
+    // Get current user first
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez être connecté pour publier.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Rate limiting
+    if (!rateLimiter.isAllowed(`create_post_${user.id}`, 5, 60000)) {
+      toast({
+        title: "Trop de tentatives",
+        description: "Veuillez attendre avant de publier à nouveau",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate input data
+    try {
+      const postData: CreatePostData = {
+        content: content.trim(),
+        event_title: event?.title?.trim() || undefined,
+        event_description: event?.description?.trim() || undefined,
+        location: selectedLocation?.trim() || undefined,
+        event_date: event?.date || undefined,
+        event_time: event?.time || undefined,
+      };
+
+      createPostSchema.parse(postData);
+    } catch (error) {
+      toast({
+        title: "Erreur de validation",
+        description: "Veuillez vérifier vos données",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!content.trim() && mediaFiles.length === 0) {
       toast({
         title: "Erreur",
@@ -53,26 +97,27 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
 
     setUploading(true);
     try {
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour publier.",
-          variant: "destructive"
-        });
-        return;
+
+      // Validate all files before upload
+      for (const media of mediaFiles) {
+        if (!validateFileType(media.file, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/mov', 'video/avi'])) {
+          throw new Error(`Type de fichier non supporté: ${media.file.name}`);
+        }
+        if (!validateFileSize(media.file, 10)) {
+          throw new Error(`Fichier trop volumineux: ${media.file.name}`);
+        }
+        if (media.type === 'image') {
+          const isValidSignature = await validateFileSignature(media.file);
+          if (!isValidSignature) {
+            throw new Error(`Fichier corrompu ou non valide: ${media.file.name}`);
+          }
+        }
       }
 
       // Upload media files to Supabase Storage
       const uploadedMediaUrls = [];
       for (const media of mediaFiles) {
-        // Sanitize filename: remove spaces, special characters, and normalize
-        const sanitizedName = media.file.name
-          .replace(/[^a-zA-Z0-9.-]/g, '_') // Replace special chars with underscore
-          .replace(/_{2,}/g, '_') // Replace multiple underscores with single
-          .toLowerCase(); // Convert to lowercase
-        
+        const sanitizedName = sanitizeFilename(media.file.name);
         const fileName = `${Date.now()}_${sanitizedName}`;
         const { data, error } = await supabase.storage
           .from('posts-media')
@@ -87,18 +132,23 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
         uploadedMediaUrls.push(publicUrl);
       }
 
+      // Sanitize content before saving
+      const sanitizedContent = sanitizeContent(content);
+      const sanitizedEventTitle = event?.title ? sanitizeContent(event.title) : null;
+      const sanitizedEventDescription = event?.description ? sanitizeContent(event.description) : null;
+
       // Create post in database
       const { error: postError } = await supabase
         .from('posts')
         .insert({
           user_id: user.id,
-          content: content.trim(),
+          content: sanitizedContent,
           media_urls: uploadedMediaUrls.length > 0 ? uploadedMediaUrls : null,
           location: selectedLocation || null,
-          event_title: event?.title || null,
+          event_title: sanitizedEventTitle,
           event_date: event?.date || null,
           event_time: event?.time || null,
-          event_description: event?.description || null
+          event_description: sanitizedEventDescription
         });
 
       if (postError) throw postError;
