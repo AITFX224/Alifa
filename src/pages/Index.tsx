@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { usePosts } from "@/hooks/usePosts";
 import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { MessagesPanel } from "@/components/MessagesPanel";
@@ -17,65 +18,40 @@ import { MobilePostCard } from "@/components/MobilePostCard";
 import { SearchMobile } from "@/components/SearchMobile";
 import { NetworkSection } from "@/components/NetworkSection";
 import { ArtisansSection } from "@/components/ArtisansSection";
+
 const Index = () => {
-  const {
-    toast
-  } = useToast();
-  const {
-    user,
-    loading,
-    signOut
-  } = useAuth();
+  const { toast } = useToast();
+  const { user, loading, signOut } = useAuth();
+  const { posts: realPosts, loading: postsLoading } = usePosts();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
   const [followedArtisans, setFollowedArtisans] = useState<Set<string>>(new Set());
-  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [likedArtisans, setLikedArtisans] = useState<Set<string>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
-  const [posts, setPosts] = useState([{
-    id: 1,
-    author: "Fatou Diallo",
-    profession: "Coiffeuse",
-    location: "Conakry",
-    time: "Il y a 2h",
-    content: "Nouvelle coiffure tendance ! Qui veut essayer ce style moderne ? 💇‍♀️✨",
-    image: "/placeholder.svg",
-    likes: 24,
-    comments: 8,
-    shares: 3,
-    avatar: "/placeholder.svg",
-    verified: true
-  }, {
-    id: 2,
-    author: "Mamadou Camara",
-    profession: "Tailleur",
-    location: "Kindia",
-    time: "Il y a 4h",
-    content: "Costume sur mesure terminé ! Broderies traditionnelles guinéennes. Contactez-moi pour vos commandes 👔",
-    image: "/placeholder.svg",
-    likes: 18,
-    comments: 5,
-    shares: 2,
-    avatar: "/placeholder.svg",
+  
+  // Transform real posts to match the expected format
+  const posts = realPosts.map(post => ({
+    id: parseInt(post.id), // Convert to number for compatibility
+    author: post.profiles?.display_name || 'Utilisateur',
+    profession: post.profiles?.profession || 'Artisan',
+    location: post.location || 'Guinée',
+    time: new Date(post.created_at).toLocaleDateString('fr-FR'),
+    content: post.content,
+    image: post.media_urls?.[0] || "/placeholder.svg",
+    likes: post.likes_count,
+    comments: post.comments_count,
+    shares: post.shares_count,
+    avatar: post.profiles?.avatar_url || "/placeholder.svg",
     verified: false
-  }, {
-    id: 3,
-    author: "Aïssatou Barry",
-    profession: "Bijoutière",
-    location: "Labé",
-    time: "Il y a 6h",
-    content: "Nouvelles créations en or ! Bijoux traditionnels avec une touche moderne 💍✨",
-    image: "/placeholder.svg",
-    likes: 31,
-    comments: 12,
-    shares: 7,
-    avatar: "/placeholder.svg",
-    verified: true
-  }]);
+  }));
+  
   const shortcuts = [{
     name: "Coiffeurs",
     icon: "✂️",
@@ -97,6 +73,7 @@ const Index = () => {
     count: 203,
     trend: "+5%"
   }];
+
   const suggestions = [{
     name: "Ibrahim Diallo",
     profession: "Électricien",
@@ -116,6 +93,7 @@ const Index = () => {
     rating: 4.8,
     mutual: 8
   }];
+
   const trendingTopics = [{
     name: "#CoiffureModerne",
     posts: 45,
@@ -136,23 +114,21 @@ const Index = () => {
 
   // Fonctions pour gérer les interactions
   const handleLikePost = (postId: number) => {
-    const isLiked = likedPosts.has(postId);
+    const postIdStr = postId.toString();
+    const isLiked = likedPosts.has(postIdStr);
     const newLikedPosts = new Set(likedPosts);
     if (isLiked) {
-      newLikedPosts.delete(postId);
+      newLikedPosts.delete(postIdStr);
     } else {
-      newLikedPosts.add(postId);
+      newLikedPosts.add(postIdStr);
     }
     setLikedPosts(newLikedPosts);
-    setPosts(posts.map(post => post.id === postId ? {
-      ...post,
-      likes: post.likes + (isLiked ? -1 : 1)
-    } : post));
     toast({
       title: isLiked ? "Like retiré" : "Publication aimée !",
       description: isLiked ? "Vous n'aimez plus cette publication" : "Votre like a été ajouté"
     });
   };
+
   const handleFollowArtisan = (artisanName: string) => {
     const isFollowed = followedArtisans.has(artisanName);
     const newFollowed = new Set(followedArtisans);
@@ -167,29 +143,25 @@ const Index = () => {
       description: isFollowed ? `Vous ne suivez plus ${artisanName}` : `Vous suivez maintenant ${artisanName}`
     });
   };
+
   const handleSectionChange = (section: string) => {
     setCurrentSection(section);
-    toast({
-      title: "Navigation",
-      description: `Section ${section} sélectionnée`
-    });
   };
+
   const handleSharePost = (postId: number) => {
-    setPosts(posts.map(post => post.id === postId ? {
-      ...post,
-      shares: post.shares + 1
-    } : post));
     toast({
       title: "Publication partagée !",
       description: "Le contenu a été partagé avec vos contacts"
     });
   };
+
   const handleCommentPost = (postId: number) => {
     toast({
       title: "Commentaires",
       description: "Ouverture de la section commentaires..."
     });
   };
+
   const handleShortcutClick = (shortcutName: string) => {
     toast({
       title: `${shortcutName} sélectionnés`,
@@ -220,15 +192,20 @@ const Index = () => {
       description: isLiked ? "Vous n'aimez plus cet artisan" : "Artisan ajouté à vos favoris"
     });
   };
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+
+  if (loading || postsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center space-y-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-muted-foreground">Chargement...</p>
         </div>
-      </div>;
+      </div>
+    );
   }
-  return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
       {/* Mobile Navigation */}
       <MobileNavigation currentSection={currentSection} onSectionChange={handleSectionChange} />
 
@@ -238,7 +215,6 @@ const Index = () => {
           <div className="flex items-center justify-between h-18">
             {/* Logo et recherche */}
             <div className="flex items-center space-x-8 flex-1">
-              {/* Logo */}
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-brand rounded-xl flex items-center justify-center shadow-glow">
                   <span className="text-lg font-bold text-white">A</span>
@@ -405,7 +381,7 @@ const Index = () => {
                   }}>
                     <MobilePostCard 
                       post={post} 
-                      isLiked={likedPosts.has(post.id)} 
+                      isLiked={likedPosts.has(post.id.toString())} 
                       onLike={() => handleLikePost(post.id)} 
                       onComment={() => handleCommentPost(post.id)} 
                       onShare={() => handleSharePost(post.id)} 
@@ -536,9 +512,16 @@ const Index = () => {
                       </div>
 
                       {/* Image */}
-                      <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                      </div>
+                      {post.image && post.image !== "/placeholder.svg" && (
+                        <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
+                          <img 
+                            src={post.image} 
+                            alt="Post media" 
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        </div>
+                      )}
 
                       {/* Actions */}
                       <div className="p-5">
@@ -556,8 +539,8 @@ const Index = () => {
                           </div>
                         </div>
                         <div className="flex items-center border-t border-border/50 pt-3">
-                          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id) ? 'text-destructive bg-destructive/10' : ''}`} onClick={() => handleLikePost(post.id)}>
-                            <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id) ? 'fill-destructive' : ''}`} />
+                          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id.toString()) ? 'text-destructive bg-destructive/10' : ''}`} onClick={() => handleLikePost(post.id)}>
+                            <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id.toString()) ? 'fill-destructive' : ''}`} />
                             J'aime
                           </Button>
                           <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => handleCommentPost(post.id)}>
@@ -655,6 +638,8 @@ const Index = () => {
           )}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
