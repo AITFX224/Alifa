@@ -98,22 +98,6 @@ const Index = () => {
     growth: "+12%"
   }];
 
-  // Fonctions pour gérer les interactions
-  const handleLikePost = (postId: number) => {
-    const postIdStr = postId.toString();
-    const isLiked = likedPosts.has(postIdStr);
-    const newLikedPosts = new Set(likedPosts);
-    if (isLiked) {
-      newLikedPosts.delete(postIdStr);
-    } else {
-      newLikedPosts.add(postIdStr);
-    }
-    setLikedPosts(newLikedPosts);
-    toast({
-      title: isLiked ? "Like retiré" : "Publication aimée !",
-      description: isLiked ? "Vous n'aimez plus cette publication" : "Votre like a été ajouté"
-    });
-  };
 
   const handleFollowArtisan = (artisanName: string) => {
     const isFollowed = followedArtisans.has(artisanName);
@@ -134,17 +118,10 @@ const Index = () => {
     setCurrentSection(section);
   };
 
-  const handleSharePost = (postId: number) => {
+  const handleSharePost = (postId: string) => {
     toast({
-      title: "Publication partagée !",
-      description: "Le contenu a été partagé avec vos contacts"
-    });
-  };
-
-  const handleCommentPost = (postId: number) => {
-    toast({
-      title: "Commentaires",
-      description: "Ouverture de la section commentaires..."
+      title: "Publication partagée",
+      description: "Le lien de la publication a été copié",
     });
   };
 
@@ -363,17 +340,34 @@ const Index = () => {
 
               {/* Mobile Posts */}
               <div className="px-3 space-y-3">
-                {posts.map((post, index) => (
+                {transformedPosts.map((post, index) => (
                   <div key={post.id} className="animate-fade-in" style={{
                     animationDelay: `${0.1 * index}s`
                   }}>
-                    <MobilePostCard 
-                      post={post} 
-                      isLiked={likedPosts.has(post.id.toString())} 
-                      onLike={() => handleLikePost(post.id)} 
-                      onComment={() => handleCommentPost(post.id)} 
-                      onShare={() => handleSharePost(post.id)} 
-                    />
+                     <MobilePostCard
+                       post={{
+                         id: post.id.toString(),
+                         content: post.content,
+                         created_at: post.time,
+                         likes_count: post.likes,
+                         comments_count: post.comments,
+                         shares_count: post.shares,
+                         media_urls: post.image && post.image !== "/placeholder.svg" ? [post.image] : null,
+                         location: post.location,
+                         author: {
+                           name: post.profiles?.display_name || "Utilisateur anonyme",
+                           avatar: post.profiles?.avatar_url || "/placeholder.svg",
+                           location: post.location || "Localisation inconnue",
+                           time: new Date(post.time).toLocaleDateString('fr-FR', {
+                             day: 'numeric',
+                             month: 'short',
+                             hour: '2-digit',
+                             minute: '2-digit'
+                           })
+                         }
+                       }}
+                       onShare={(id) => handleSharePost(id)}
+                     />
                   </div>
                 ))}
               </div>
@@ -532,15 +526,15 @@ const Index = () => {
                           </div>
                         </div>
                         <div className="flex items-center border-t border-border/50 pt-3">
-                          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${likedPosts.has(post.id.toString()) ? 'text-destructive bg-destructive/10' : ''}`} onClick={() => handleLikePost(post.id)}>
-                            <Heart className={`w-4 h-4 mr-2 ${likedPosts.has(post.id.toString()) ? 'fill-destructive' : ''}`} />
+                          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200`}>
+                            <Heart className={`w-4 h-4 mr-2`} />
                             J'aime
                           </Button>
-                          <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => handleCommentPost(post.id)}>
+                          <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200">
                             <MessageCircle className="w-4 h-4 mr-2" />
                             Commenter
                           </Button>
-                          <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => handleSharePost(post.id)}>
+                          <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => handleSharePost(post.id.toString())}>
                             <Share className="w-4 h-4 mr-2" />
                             Partager
                           </Button>

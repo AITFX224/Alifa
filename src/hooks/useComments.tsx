@@ -29,8 +29,11 @@ export const useComments = (postId: string) => {
         const { data, error } = await supabase
           .from("post_comments")
           .select(`
-            *,
-            profiles!post_comments_user_id_fkey (
+            id,
+            content,
+            created_at,
+            user_id,
+            profiles!inner (
               display_name,
               avatar_url
             )
@@ -38,12 +41,19 @@ export const useComments = (postId: string) => {
           .eq("post_id", postId)
           .order("created_at", { ascending: true });
 
-        if (error) throw error;
-
-        setComments(data || []);
-        setCommentsCount(data?.length || 0);
+        if (error) {
+          console.error("Error fetching comments:", error);
+          setComments([]);
+          setCommentsCount(0);
+        } else {
+          const typedComments = data as Comment[];
+          setComments(typedComments);
+          setCommentsCount(typedComments.length);
+        }
       } catch (error) {
         console.error("Error fetching comments:", error);
+        setComments([]);
+        setCommentsCount(0);
       } finally {
         setLoading(false);
       }
@@ -67,17 +77,21 @@ export const useComments = (postId: string) => {
           supabase
             .from("post_comments")
             .select(`
-              *,
-              profiles!post_comments_user_id_fkey (
+              id,
+              content,
+              created_at,
+              user_id,
+              profiles!inner (
                 display_name,
                 avatar_url
               )
             `)
             .eq("id", payload.new.id)
             .single()
-            .then(({ data }) => {
-              if (data) {
-                setComments(prev => [...prev, data]);
+            .then(({ data, error }) => {
+              if (data && !error) {
+                const newComment = data as Comment;
+                setComments(prev => [...prev, newComment]);
                 setCommentsCount(prev => prev + 1);
               }
             });
