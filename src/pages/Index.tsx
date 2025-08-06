@@ -23,7 +23,7 @@ import { ArtisansSection } from "@/components/ArtisansSection";
 const Index = () => {
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
-  const { posts: realPosts, loading: postsLoading } = usePosts();
+  const { posts: realPosts, loading: postsLoading, refetch } = usePosts();
   const { filters, activeFilter, applyFilter, filterPosts } = useFilters();
   const navigate = useNavigate();
 
@@ -52,7 +52,12 @@ const Index = () => {
     shares: post.shares_count,
     avatar: post.profiles?.avatar_url || "/placeholder.svg",
     verified: false,
-    profiles: post.profiles
+    profiles: post.profiles,
+    user_id: post.user_id,
+    event_title: post.event_title,
+    event_description: post.event_description,
+    event_date: post.event_date,
+    event_time: post.event_time
   }));
 
   // Apply filters to posts
@@ -345,28 +350,34 @@ const Index = () => {
                     animationDelay: `${0.1 * index}s`
                   }}>
                      <MobilePostCard
-                       post={{
-                         id: post.id.toString(),
-                         content: post.content,
-                         created_at: post.time,
-                         likes_count: post.likes,
-                         comments_count: post.comments,
-                         shares_count: post.shares,
-                         media_urls: post.image && post.image !== "/placeholder.svg" ? [post.image] : null,
-                         location: post.location,
-                         author: {
-                           name: post.profiles?.display_name || "Utilisateur anonyme",
-                           avatar: post.profiles?.avatar_url || "/placeholder.svg",
-                           location: post.location || "Localisation inconnue",
-                           time: new Date(post.time).toLocaleDateString('fr-FR', {
-                             day: 'numeric',
-                             month: 'short',
-                             hour: '2-digit',
-                             minute: '2-digit'
-                           })
-                         }
-                       }}
-                       onShare={(id) => handleSharePost(id)}
+                        post={{
+                          id: post.id.toString(),
+                          content: post.content,
+                          created_at: post.time,
+                          likes_count: post.likes,
+                          comments_count: post.comments,
+                          shares_count: post.shares,
+                          media_urls: post.image && post.image !== "/placeholder.svg" ? [post.image] : null,
+                          location: post.location,
+                          user_id: post.user_id,
+                          event_title: post.event_title,
+                          event_description: post.event_description,
+                          event_date: post.event_date,
+                          event_time: post.event_time,
+                          author: {
+                            name: post.profiles?.display_name || "Utilisateur anonyme",
+                            avatar: post.profiles?.avatar_url || "/placeholder.svg",
+                            location: post.location || "Localisation inconnue",
+                            time: new Date(post.time).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })
+                          }
+                        }}
+                        onShare={(id) => handleSharePost(id)}
+                        onPostUpdated={refetch}
                      />
                   </div>
                 ))}

@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Share2, MapPin, Clock } from "lucide-react";
+import { Heart, MessageCircle, Share2, MapPin, Clock, MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useLikes } from "@/hooks/useLikes";
 import { CommentsSection } from "@/components/CommentsSection";
+import { EditPostDialog } from "@/components/EditPostDialog";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Post {
   id: string;
@@ -15,6 +18,11 @@ interface Post {
   shares_count: number;
   media_urls?: string[] | null;
   location?: string | null;
+  event_title?: string | null;
+  event_description?: string | null;
+  event_date?: string | null;
+  event_time?: string | null;
+  user_id: string;
   author: {
     name: string;
     avatar: string;
@@ -26,11 +34,15 @@ interface Post {
 interface MobilePostCardProps {
   post: Post;
   onShare: (postId: string) => void;
+  onPostUpdated?: () => void;
 }
 
-export const MobilePostCard = ({ post, onShare }: MobilePostCardProps) => {
+export const MobilePostCard = ({ post, onShare, onPostUpdated }: MobilePostCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const { isLiked, likesCount, toggleLike, loading: likeLoading } = useLikes(post.id);
+  const { user } = useAuth();
+  
+  const isOwner = user?.id === post.user_id;
 
   return (
     <Card className="bg-card border-border overflow-hidden">
@@ -52,6 +64,25 @@ export const MobilePostCard = ({ post, onShare }: MobilePostCardProps) => {
             <span>{post.author.time}</span>
           </div>
         </div>
+        
+        {/* Actions menu for post owner */}
+        {isOwner && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <EditPostDialog 
+                  post={post} 
+                  onPostUpdated={onPostUpdated || (() => {})} 
+                />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* Content */}
