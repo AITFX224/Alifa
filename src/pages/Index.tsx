@@ -40,7 +40,7 @@ const Index = () => {
   
   // Transform real posts to match the expected format
   const transformedPosts = realPosts.map(post => ({
-    id: parseInt(post.id), // Convert to number for compatibility
+    id: post.id, // Keep as UUID string
     author: post.profiles?.display_name || 'Utilisateur',
     profession: post.profiles?.profession || 'Artisan',
     location: post.location || 'Guinée',
@@ -351,7 +351,7 @@ const Index = () => {
                   }}>
                      <MobilePostCard
                         post={{
-                          id: post.id.toString(),
+                          id: post.id, // Keep UUID as string
                           content: post.content,
                           created_at: post.time,
                           likes_count: post.likes,
