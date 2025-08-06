@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { usePosts } from "@/hooks/usePosts";
 import { useFilters } from "@/hooks/useFilters";
+import { useArtisans } from "@/hooks/useArtisans";
+import { useTrendingTopics } from "@/hooks/useTrendingTopics";
 import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { MessagesPanel } from "@/components/MessagesPanel";
@@ -25,6 +27,8 @@ const Index = () => {
   const { user, loading, signOut } = useAuth();
   const { posts: realPosts, loading: postsLoading, refetch } = usePosts();
   const { filters, activeFilter, applyFilter, filterPosts } = useFilters();
+  const { artisans, loading: artisansLoading } = useArtisans();
+  const { trendingTopics, loading: trendingLoading } = useTrendingTopics();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,43 +69,14 @@ const Index = () => {
   
   
 
-  const suggestions = [{
-    name: "Ibrahim Diallo",
-    profession: "Électricien",
-    location: "Conakry",
-    rating: 4.9,
-    mutual: 5
-  }, {
-    name: "Mariama Soumah",
-    profession: "Couturière",
-    location: "Kankan",
-    rating: 4.7,
-    mutual: 3
-  }, {
-    name: "Alpha Condé",
-    profession: "Menuisier",
-    location: "Labé",
-    rating: 4.8,
-    mutual: 8
-  }];
-
-  const trendingTopics = [{
-    name: "#CoiffureModerne",
-    posts: 45,
-    growth: "+23%"
-  }, {
-    name: "#TailleurGuinéen",
-    posts: 32,
-    growth: "+18%"
-  }, {
-    name: "#BijouxAfricains",
-    posts: 28,
-    growth: "+31%"
-  }, {
-    name: "#MenuiserieArt",
-    posts: 21,
-    growth: "+12%"
-  }];
+  // Suggestions d'artisans depuis la base de données
+  const suggestions = artisans.slice(0, 4).map(artisan => ({
+    name: artisan.display_name,
+    profession: artisan.profession,
+    location: artisan.location,
+    rating: artisan.rating,
+    mutual: Math.floor(Math.random() * 10) + 1 // Temporaire - en attendant la logique des amis communs
+  }));
 
 
   const handleFollowArtisan = (artisanName: string) => {
@@ -163,7 +138,7 @@ const Index = () => {
     });
   };
 
-  if (loading || postsLoading) {
+  if (loading || postsLoading || artisansLoading || trendingLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center space-y-4">
@@ -601,19 +576,19 @@ const Index = () => {
                 }}>
                   <CardContent className="p-5">
                     <h3 className="font-poppins font-semibold text-lg mb-4">Tendances</h3>
-                    <div className="space-y-3">
-                      {trendingTopics.map((topic, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
-                          <div>
-                            <h4 className="font-semibold text-sm text-primary">{topic.name}</h4>
-                            <p className="text-xs text-muted-foreground">{topic.posts} publications</p>
-                          </div>
-                          <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
-                            {topic.growth}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
+                     <div className="space-y-3">
+                       {trendingTopics.map((topic) => (
+                         <div key={topic.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
+                           <div>
+                             <h4 className="font-semibold text-sm text-primary">{topic.hashtag}</h4>
+                             <p className="text-xs text-muted-foreground">{topic.posts_count} publications</p>
+                           </div>
+                           <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
+                             {topic.growth_percentage}
+                           </Badge>
+                         </div>
+                       ))}
+                     </div>
                   </CardContent>
                 </Card>
               </div>

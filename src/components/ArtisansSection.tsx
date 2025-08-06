@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useArtisans } from "@/hooks/useArtisans";
 
 interface ArtisansSectionProps {
   onContactArtisan: (artisanName: string) => void;
@@ -17,6 +18,7 @@ interface ArtisansSectionProps {
 
 export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans }: ArtisansSectionProps) => {
   const { toast } = useToast();
+  const { artisans: realArtisans, loading } = useArtisans();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLocation, setSelectedLocation] = useState("all");
@@ -45,133 +47,39 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
     { id: "faranah", name: "Faranah" }
   ];
 
-  const artisans = [
-    {
-      id: "1",
-      name: "Fatou Diallo",
-      profession: "Coiffeuse Expert",
-      specialties: ["Coiffure moderne", "Tresses africaines", "Soins capillaires"],
-      location: "Conakry, Kaloum",
-      rating: 4.9,
-      reviewsCount: 147,
-      completedProjects: 234,
-      avatar: "/placeholder.svg",
-      coverImage: "/placeholder.svg",
-      phone: "+224 622 XX XX XX",
-      website: "fatoucoiffure.com",
-      verified: true,
-      premium: true,
-      isOnline: true,
-      responseTime: "Répond en moins d'1h",
-      priceRange: "50 000 - 200 000 GNF",
-      gallery: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
-      bio: "Coiffeuse passionnée avec 8 ans d'expérience. Spécialisée dans les coiffures modernes et traditionnelles.",
-      certifications: ["Certificat Professionnel Coiffure", "Formation Tresses Africaines"],
-      joinedDate: "Membre depuis 2 ans",
-      lastActive: "En ligne maintenant",
-      category: "coiffure"
-    },
-    {
-      id: "5",
-      name: "Guinée Plomberie",
-      profession: "Plombier Expert",
-      specialties: ["Plomberie résidentielle", "Installation sanitaire", "Réparation fuite"],
-      location: "Conakry, Matoto - Matam",
-      rating: 4.8,
-      reviewsCount: 92,
-      completedProjects: 127,
-      avatar: "/lovable-uploads/db58d7ae-fb44-4227-b675-93679f1a6d17.png",
-      coverImage: "/placeholder.svg",
-      phone: "+224 626 XX XX XX",
-      website: null,
-      verified: true,
-      premium: false,
-      isOnline: true,
-      responseTime: "Répond en moins de 2h",
-      priceRange: "80 000 - 600 000 GNF",
-      gallery: ["/placeholder.svg", "/placeholder.svg"],
-      bio: "Plombier professionnel avec 5 ans d'expérience. Spécialisé dans les installations résidentielles et les réparations d'urgence.",
-      certifications: ["Certificat Professionnel Plomberie", "Formation Sécurité Chantier"],
-      joinedDate: "Membre depuis 6 mois",
-      lastActive: "En ligne maintenant",
-      category: "plomberie"
-    },
-    {
-      id: "2",
-      name: "Ibrahim Diallo",
-      profession: "Électricien Certifié",
-      specialties: ["Installation électrique", "Dépannage", "Maintenance industrielle"],
-      location: "Kindia Centre",
-      rating: 4.8,
-      reviewsCount: 89,
-      completedProjects: 156,
-      avatar: "/placeholder.svg",
-      coverImage: "/placeholder.svg",
-      phone: "+224 623 XX XX XX",
-      website: null,
-      verified: true,
-      premium: false,
-      isOnline: false,
-      responseTime: "Répond en moins de 2h",
-      priceRange: "75 000 - 500 000 GNF",
-      gallery: ["/placeholder.svg", "/placeholder.svg"],
-      bio: "Électricien qualifié avec une expertise en installations résidentielles et industrielles.",
-      certifications: ["Certificat Électricien", "Habilitation B1V"],
-      joinedDate: "Membre depuis 1 an",
-      lastActive: "Actif il y a 1h",
-      category: "electricite"
-    },
-    {
-      id: "3",
-      name: "Mariama Soumah",
-      profession: "Couturière Traditionnelle",
-      specialties: ["Robes traditionnelles", "Costumes sur mesure", "Retouches"],
-      location: "Kankan",
-      rating: 4.7,
-      reviewsCount: 156,
-      completedProjects: 89,
-      avatar: "/placeholder.svg",
-      coverImage: "/placeholder.svg",
-      phone: "+224 664 XX XX XX",
-      website: "mariamasouturecreations.com",
-      verified: false,
-      premium: true,
-      isOnline: true,
-      responseTime: "Répond en moins de 30min",
-      priceRange: "100 000 - 800 000 GNF",
-      gallery: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
-      bio: "Couturière spécialisée dans les vêtements traditionnels guinéens avec une touche moderne.",
-      certifications: ["CAP Couture", "Formation Design Vestimentaire"],
-      joinedDate: "Membre depuis 3 ans",
-      lastActive: "En ligne maintenant",
-      category: "couture"
-    },
-    {
-      id: "4",
-      name: "Alpha Condé",
-      profession: "Menuisier Artisan",
-      specialties: ["Meubles sur mesure", "Rénovation", "Design d'intérieur"],
-      location: "Labé",
-      rating: 4.9,
-      reviewsCount: 203,
-      completedProjects: 178,
-      avatar: "/placeholder.svg",
-      coverImage: "/placeholder.svg",
-      phone: "+224 625 XX XX XX",
-      website: "alphamenuiserie.gn",
-      verified: true,
-      premium: true,
-      isOnline: true,
-      responseTime: "Répond en moins d'1h",
-      priceRange: "200 000 - 2 000 000 GNF",
-      gallery: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
-      bio: "Menuisier expert en création de meubles sur mesure et aménagement d'espaces.",
-      certifications: ["CAP Menuiserie", "Formation Design Mobilier"],
-      joinedDate: "Membre depuis 2 ans",
-      lastActive: "En ligne maintenant",
-      category: "menuiserie"
-    }
-  ];
+  // Transformer les données réelles d'artisans
+  const artisans = realArtisans.map(artisan => ({
+    id: artisan.id,
+    name: artisan.display_name,
+    profession: artisan.profession,
+    rating: artisan.rating,
+    reviewsCount: artisan.reviews_count,
+    completedProjects: artisan.posts_count, // Utiliser posts_count comme proxy pour les projets
+    location: artisan.location,
+    specialties: artisan.specialties || [],
+    verified: artisan.is_verified,
+    avatar: artisan.avatar_url || "/placeholder.svg",
+    phone: artisan.phone,
+    website: artisan.website,
+    bio: artisan.bio,
+    // Valeurs par défaut pour les champs manquants
+    premium: false,
+    isOnline: Math.random() > 0.5, // Simulé
+    responseTime: "Répond en moins de 2h",
+    priceRange: "Prix sur demande",
+    coverImage: "/placeholder.svg",
+    gallery: ["/placeholder.svg"],
+    certifications: ["Artisan qualifié"],
+    joinedDate: "Nouveau membre",
+    lastActive: "Récemment actif",
+    category: (artisan.profession || "").toLowerCase().includes("coiff") ? "coiffure" :
+              (artisan.profession || "").toLowerCase().includes("électr") ? "electricite" :
+              (artisan.profession || "").toLowerCase().includes("menu") ? "menuiserie" :
+              (artisan.profession || "").toLowerCase().includes("coutu") ? "couture" :
+              (artisan.profession || "").toLowerCase().includes("mécan") ? "mecanique" :
+              (artisan.profession || "").toLowerCase().includes("plomb") ? "plomberie" :
+              (artisan.profession || "").toLowerCase().includes("bijou") ? "bijouterie" : "art"
+  }));
 
   const filteredArtisans = artisans.filter(artisan => {
     const matchesSearch = artisan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -503,16 +411,37 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
       {/* Results Summary */}
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground">
-          {sortedArtisans.length} artisan{sortedArtisans.length > 1 ? 's' : ''} trouvé{sortedArtisans.length > 1 ? 's' : ''}
+          {loading ? "Chargement..." : `${sortedArtisans.length} artisan${sortedArtisans.length > 1 ? 's' : ''} trouvé${sortedArtisans.length > 1 ? 's' : ''}`}
         </p>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="card-enhanced animate-pulse">
+              <div className="h-32 bg-muted"></div>
+              <CardContent className="p-6 -mt-8 relative">
+                <div className="w-16 h-16 bg-muted rounded-full mb-4"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {/* Artisans Grid/List */}
-      <div className={`grid gap-4 md:gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
-        {sortedArtisans.map((artisan, index) => (
-          <ArtisanCard key={artisan.id} artisan={artisan} index={index} />
-        ))}
-      </div>
+      {!loading && (
+        <div className={`grid gap-4 md:gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
+          {sortedArtisans.map((artisan, index) => (
+            <ArtisanCard key={artisan.id} artisan={artisan} index={index} />
+          ))}
+        </div>
+      )}
 
       {/* Empty State */}
       {sortedArtisans.length === 0 && (

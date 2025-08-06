@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useArtisans } from "@/hooks/useArtisans";
 
 const filters = [
   { id: "coiffure", name: "Coiffeurs", icon: "✂️", count: 245, trend: "+12%" },
@@ -15,11 +16,7 @@ const filters = [
   { id: "plomberie", name: "Plombiers", icon: "🚿", count: 45, trend: "+22%" }
 ];
 
-const suggestions = [
-  { name: "Ibrahim Diallo", profession: "Électricien", location: "Conakry", rating: 4.9, mutual: 5 },
-  { name: "Mariama Soumah", profession: "Couturière", location: "Kankan", rating: 4.7, mutual: 3 },
-  { name: "Alpha Condé", profession: "Menuisier", location: "Labé", rating: 4.8, mutual: 8 }
-];
+// Les suggestions seront récupérées depuis le hook useArtisans
 
 interface SearchMobileProps {
   onShortcutClick: (filterId: string) => void;
@@ -29,6 +26,16 @@ interface SearchMobileProps {
 
 export const SearchMobile = ({ onShortcutClick, onFollowArtisan, followedArtisans }: SearchMobileProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { artisans, loading } = useArtisans();
+  
+  // Suggestions d'artisans depuis la base de données
+  const suggestions = artisans.slice(0, 3).map(artisan => ({
+    name: artisan.display_name,
+    profession: artisan.profession,
+    location: artisan.location,
+    rating: artisan.rating,
+    mutual: Math.floor(Math.random() * 10) + 1 // Temporaire
+  }));
 
   return (
     <div className="space-y-6 pb-20">
@@ -80,7 +87,24 @@ export const SearchMobile = ({ onShortcutClick, onFollowArtisan, followedArtisan
         <h3 className="font-poppins font-semibold text-lg">Artisans suggérés</h3>
         
         <div className="space-y-3">
-          {suggestions.map((suggestion, index) => (
+          {loading ? (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i} className="bg-card/50 backdrop-blur-sm border border-border/50 animate-pulse">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-muted rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            suggestions.map((suggestion, index) => (
             <Card key={index} className="bg-card/50 backdrop-blur-sm border border-border/50">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
@@ -121,7 +145,8 @@ export const SearchMobile = ({ onShortcutClick, onFollowArtisan, followedArtisan
                 </div>
               </CardContent>
             </Card>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

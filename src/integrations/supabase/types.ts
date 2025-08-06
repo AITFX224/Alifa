@@ -183,39 +183,99 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          followers_count: number | null
           id: string
+          is_active: boolean | null
+          is_verified: boolean | null
           location: string | null
           phone: string | null
+          posts_count: number | null
           profession: string | null
+          rating: number | null
+          reviews_count: number | null
+          specialties: string[] | null
           updated_at: string
           user_id: string
           website: string | null
+          years_experience: number | null
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          followers_count?: number | null
           id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
           location?: string | null
           phone?: string | null
+          posts_count?: number | null
           profession?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          specialties?: string[] | null
           updated_at?: string
           user_id: string
           website?: string | null
+          years_experience?: number | null
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          followers_count?: number | null
           id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
           location?: string | null
           phone?: string | null
+          posts_count?: number | null
           profession?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          specialties?: string[] | null
           updated_at?: string
           user_id?: string
           website?: string | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      trending_topics: {
+        Row: {
+          category: string | null
+          created_at: string
+          growth_percentage: string
+          hashtag: string
+          id: string
+          is_active: boolean
+          posts_count: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          growth_percentage?: string
+          hashtag: string
+          id?: string
+          is_active?: boolean
+          posts_count?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          growth_percentage?: string
+          hashtag?: string
+          id?: string
+          is_active?: boolean
+          posts_count?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
