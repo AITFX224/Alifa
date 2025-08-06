@@ -6,11 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const shortcuts = [
-  { name: "Coiffeurs", icon: "✂️", count: 245, trend: "+12%" },
-  { name: "Tailleurs", icon: "👔", count: 189, trend: "+8%" },
-  { name: "Menuisiers", icon: "🔨", count: 156, trend: "+15%" },
-  { name: "Mécaniciens", icon: "🔧", count: 203, trend: "+5%" }
+const filters = [
+  { id: "coiffure", name: "Coiffeurs", icon: "✂️", count: 245, trend: "+12%" },
+  { id: "couture", name: "Tailleurs", icon: "👔", count: 189, trend: "+8%" },
+  { id: "menuiserie", name: "Menuisiers", icon: "🔨", count: 156, trend: "+15%" },
+  { id: "mecanique", name: "Mécaniciens", icon: "🔧", count: 203, trend: "+5%" },
+  { id: "electricite", name: "Électriciens", icon: "⚡", count: 134, trend: "+18%" },
+  { id: "plomberie", name: "Plombiers", icon: "🚿", count: 45, trend: "+22%" }
 ];
 
 const suggestions = [
@@ -20,7 +22,7 @@ const suggestions = [
 ];
 
 interface SearchMobileProps {
-  onShortcutClick: (shortcutName: string) => void;
+  onShortcutClick: (filterId: string) => void;
   onFollowArtisan: (artisanName: string) => void;
   followedArtisans: Set<string>;
 }
@@ -51,20 +53,20 @@ export const SearchMobile = ({ onShortcutClick, onFollowArtisan, followedArtisan
         </div>
         
         <div className="grid grid-cols-2 gap-3">
-          {shortcuts.map((shortcut, index) => (
+          {filters.map((filter, index) => (
             <Button
               key={index}
               variant="ghost"
               className="h-auto p-4 hover:bg-muted/50 transition-all duration-200 group"
-              onClick={() => onShortcutClick(shortcut.name)}
+              onClick={() => onShortcutClick(filter.id)}
             >
               <div className="flex flex-col items-center space-y-2 w-full">
-                <span className="text-2xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
+                <span className="text-2xl group-hover:animate-bounce-subtle">{filter.icon}</span>
                 <div className="text-center">
-                  <div className="font-medium text-sm">{shortcut.name}</div>
-                  <div className="text-xs text-muted-foreground">{shortcut.count} artisans</div>
+                  <div className="font-medium text-sm">{filter.name}</div>
+                  <div className="text-xs text-muted-foreground">{filter.count} artisans</div>
                   <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0 mt-1">
-                    {shortcut.trend}
+                    {filter.trend}
                   </Badge>
                 </div>
               </div>
