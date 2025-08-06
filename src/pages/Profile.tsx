@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Camera, MapPin, Phone, Globe, User, Edit2, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,26 +8,91 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Profile = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    displayName: "Utilisateur Zonaya",
-    bio: "Passionné par l'artisanat local et le soutien aux artisans guinéens",
-    location: "Conakry, Guinée",
-    phone: "+224 XXX XXX XXX",
+    displayName: "",
+    bio: "",
+    location: "",
+    phone: "",
     website: "",
-    email: user?.email || "utilisateur@zonaya.com"
+    email: user?.email || ""
   });
+  const [loading, setLoading] = useState(true);
 
-  const handleSave = () => {
-    setIsEditing(false);
-    toast({
-      title: "Profil mis à jour",
-      description: "Vos informations ont été sauvegardées avec succès"
-    });
+  // Charger les informations du profil
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (data && !error) {
+          setProfileData({
+            displayName: data.display_name || "",
+            bio: data.bio || "",
+            location: data.location || "",
+            phone: data.phone || "",
+            website: data.website || "",
+            email: user.email || ""
+          });
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement du profil:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          display_name: profileData.displayName,
+          bio: profileData.bio,
+          location: profileData.location,
+          phone: profileData.phone,
+          website: profileData.website,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de sauvegarder le profil",
+          variant: "destructive"
+        });
+      } else {
+        setIsEditing(false);
+        toast({
+          title: "Profil mis à jour",
+          description: "Vos informations ont été sauvegardées avec succès"
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -44,6 +109,17 @@ const Profile = () => {
       [field]: value
     }));
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Chargement du profil...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-4">
