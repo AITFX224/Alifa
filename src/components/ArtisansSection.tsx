@@ -24,12 +24,13 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const categories = [
-    { id: "all", name: "Tous les métiers", icon: "🔧", count: 1247 },
+    { id: "all", name: "Tous les métiers", icon: "🔧", count: 1248 },
     { id: "coiffure", name: "Coiffure & Beauté", icon: "✂️", count: 245 },
     { id: "couture", name: "Couture & Mode", icon: "👔", count: 189 },
     { id: "menuiserie", name: "Menuiserie", icon: "🔨", count: 156 },
     { id: "mecanique", name: "Mécanique", icon: "🔧", count: 203 },
     { id: "electricite", name: "Électricité", icon: "⚡", count: 134 },
+    { id: "plomberie", name: "Plomberie", icon: "🚿", count: 1 },
     { id: "bijouterie", name: "Bijouterie", icon: "💎", count: 78 },
     { id: "art", name: "Arts & Crafts", icon: "🎨", count: 92 }
   ];
@@ -69,6 +70,31 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
       joinedDate: "Membre depuis 2 ans",
       lastActive: "En ligne maintenant",
       category: "coiffure"
+    },
+    {
+      id: "5",
+      name: "Guinée Plomberie",
+      profession: "Plombier Expert",
+      specialties: ["Plomberie résidentielle", "Installation sanitaire", "Réparation fuite"],
+      location: "Conakry, Matoto - Matam",
+      rating: 4.8,
+      reviewsCount: 92,
+      completedProjects: 127,
+      avatar: "/lovable-uploads/db58d7ae-fb44-4227-b675-93679f1a6d17.png",
+      coverImage: "/placeholder.svg",
+      phone: "+224 626 XX XX XX",
+      website: null,
+      verified: true,
+      premium: false,
+      isOnline: true,
+      responseTime: "Répond en moins de 2h",
+      priceRange: "80 000 - 600 000 GNF",
+      gallery: ["/placeholder.svg", "/placeholder.svg"],
+      bio: "Plombier professionnel avec 5 ans d'expérience. Spécialisé dans les installations résidentielles et les réparations d'urgence.",
+      certifications: ["Certificat Professionnel Plomberie", "Formation Sécurité Chantier"],
+      joinedDate: "Membre depuis 6 mois",
+      lastActive: "En ligne maintenant",
+      category: "plomberie"
     },
     {
       id: "2",
