@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Shield, Eye, Lock, UserCheck, Download, Trash2, AlertTriangle } from "lucide-react";
+import { Shield, Eye, Lock, UserCheck, Download, Trash2, AlertTriangle, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -11,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Privacy = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [privacySettings, setPrivacySettings] = useState({
     profileVisibility: "public",
     contactInfo: "friends",
@@ -54,6 +56,15 @@ const Privacy = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* En-tête */}
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Retour
+          </Button>
           <Shield className="w-8 h-8" />
           <div>
             <h1 className="text-3xl font-poppins font-bold">Confidentialité et Sécurité</h1>

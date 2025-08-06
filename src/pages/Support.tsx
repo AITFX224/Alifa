@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { HelpCircle, MessageCircle, Phone, Mail, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { HelpCircle, MessageCircle, Phone, Mail, Search, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Support = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [contactForm, setContactForm] = useState({
     category: "",
@@ -127,6 +129,15 @@ const Support = () => {
         {/* En-tête */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 absolute left-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Retour
+            </Button>
             <HelpCircle className="w-8 h-8" />
             <h1 className="text-3xl font-poppins font-bold">Aide et Support</h1>
           </div>

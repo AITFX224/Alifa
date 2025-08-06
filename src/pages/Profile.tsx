@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Camera, MapPin, Phone, Globe, User, Edit2, Save, X } from "lucide-react";
+import { Camera, MapPin, Phone, Globe, User, Edit2, Save, X, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,6 +15,7 @@ import { AvatarUpload } from "@/components/AvatarUpload";
 const Profile = () => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     displayName: "",
@@ -143,7 +145,18 @@ const Profile = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* En-tête */}
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-poppins font-bold">Mon Profil</h1>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Retour
+            </Button>
+            <h1 className="text-3xl font-poppins font-bold">Mon Profil</h1>
+          </div>
           <Button
             onClick={() => setIsEditing(!isEditing)}
             variant={isEditing ? "outline" : "default"}

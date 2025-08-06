@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Star, ThumbsUp, ThumbsDown, MessageCircle, Filter, Search } from "lucide-react";
+import { Star, ThumbsUp, ThumbsDown, MessageCircle, Filter, Search, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Reviews = () => {
+  const navigate = useNavigate();
   const [filterRating, setFilterRating] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
 
@@ -104,7 +106,18 @@ const Reviews = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* En-tête */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h1 className="text-3xl font-poppins font-bold">Mes Avis et Notes</h1>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Retour
+            </Button>
+            <h1 className="text-3xl font-poppins font-bold">Mes Avis et Notes</h1>
+          </div>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />

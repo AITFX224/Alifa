@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Bell, Settings, Check, X, Star, Heart, MessageCircle, UserPlus, Filter } from "lucide-react";
+import { Bell, Settings, Check, X, Star, Heart, MessageCircle, UserPlus, Filter, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Notifications = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [notifications, setNotifications] = useState([
     {
@@ -127,6 +129,15 @@ const Notifications = () => {
         {/* En-tête */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Retour
+            </Button>
             <Bell className="w-8 h-8" />
             <div>
               <h1 className="text-3xl font-poppins font-bold">Notifications</h1>
