@@ -144,6 +144,39 @@ export type Database = {
           },
         ]
       }
+      privacy_settings: {
+        Row: {
+          activity_status: boolean
+          created_at: string
+          data_collection: boolean
+          id: string
+          personalized_ads: boolean
+          profile_visibility: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_status?: boolean
+          created_at?: string
+          data_collection?: boolean
+          id?: string
+          personalized_ads?: boolean
+          profile_visibility?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_status?: boolean
+          created_at?: string
+          data_collection?: boolean
+          id?: string
+          personalized_ads?: boolean
+          profile_visibility?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -191,7 +224,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_privacy_visibility: {
+        Args: { target_user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
