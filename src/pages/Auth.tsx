@@ -178,10 +178,18 @@ const Auth = () => {
     e.preventDefault();
     
     if (isResetPassword) {
-      if (!email) {
+      if (!email?.trim()) {
         toast({
           title: "Email requis",
           description: "Veuillez entrer votre adresse email",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        toast({
+          title: "Email invalide",
+          description: "Veuillez entrer une adresse email valide",
           variant: "destructive",
         });
         return;
@@ -190,7 +198,7 @@ const Auth = () => {
       return;
     }
     
-    if (!email || !password) {
+    if (!email?.trim() || !password?.trim()) {
       toast({
         title: "Champs requis",
         description: "Veuillez remplir tous les champs",
@@ -199,7 +207,16 @@ const Auth = () => {
       return;
     }
 
-    if (!isLogin && !displayName) {
+    if (password.length < 6) {
+      toast({
+        title: "Mot de passe trop court",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isLogin && !displayName?.trim()) {
       toast({
         title: "Nom requis",
         description: "Veuillez entrer votre nom d'affichage",
