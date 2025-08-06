@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { usePosts } from "@/hooks/usePosts";
+import { useFilters } from "@/hooks/useFilters";
 import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { MessagesPanel } from "@/components/MessagesPanel";
@@ -23,6 +24,7 @@ const Index = () => {
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
   const { posts: realPosts, loading: postsLoading } = usePosts();
+  const { filters, activeFilter, applyFilter, filterPosts } = useFilters();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const Index = () => {
   const [currentSection, setCurrentSection] = useState("home");
   
   // Transform real posts to match the expected format
-  const posts = realPosts.map(post => ({
+  const transformedPosts = realPosts.map(post => ({
     id: parseInt(post.id), // Convert to number for compatibility
     author: post.profiles?.display_name || 'Utilisateur',
     profession: post.profiles?.profession || 'Artisan',
@@ -49,30 +51,14 @@ const Index = () => {
     comments: post.comments_count,
     shares: post.shares_count,
     avatar: post.profiles?.avatar_url || "/placeholder.svg",
-    verified: false
+    verified: false,
+    profiles: post.profiles
   }));
+
+  // Apply filters to posts
+  const posts = filterPosts(transformedPosts);
   
-  const shortcuts = [{
-    name: "Coiffeurs",
-    icon: "✂️",
-    count: 245,
-    trend: "+12%"
-  }, {
-    name: "Tailleurs",
-    icon: "👔",
-    count: 189,
-    trend: "+8%"
-  }, {
-    name: "Menuisiers",
-    icon: "🔨",
-    count: 156,
-    trend: "+15%"
-  }, {
-    name: "Mécaniciens",
-    icon: "🔧",
-    count: 203,
-    trend: "+5%"
-  }];
+  
 
   const suggestions = [{
     name: "Ibrahim Diallo",
@@ -162,10 +148,12 @@ const Index = () => {
     });
   };
 
-  const handleShortcutClick = (shortcutName: string) => {
+  const handleFilterClick = (filterId: string) => {
+    applyFilter(filterId);
+    const filter = filters.find(f => f.id === filterId);
     toast({
-      title: `${shortcutName} sélectionnés`,
-      description: `Affichage de tous les ${shortcutName.toLowerCase()}`
+      title: `Filtre appliqué`,
+      description: `Affichage: ${filter?.name || filterId}`
     });
   };
 
@@ -314,7 +302,7 @@ const Index = () => {
         <div className="md:hidden safe-area-pt">
           {currentSection === 'search' && (
             <SearchMobile 
-              onShortcutClick={handleShortcutClick} 
+              onShortcutClick={handleFilterClick} 
               onFollowArtisan={handleFollowArtisan} 
               followedArtisans={followedArtisans} 
             />
@@ -402,26 +390,31 @@ const Index = () => {
                 <Card className="card-enhanced animate-fade-in">
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-poppins font-semibold text-lg">Raccourcis</h3>
+                      <h3 className="font-poppins font-semibold text-lg">Filtres</h3>
                       <TrendingUp className="w-4 h-4 text-success" />
+                      {activeFilter !== "all" && (
+                        <Badge variant="outline" className="text-xs">
+                          {filters.find(f => f.id === activeFilter)?.name}
+                        </Badge>
+                      )}
                     </div>
                     <div className="space-y-3">
-                      {shortcuts.map((shortcut, index) => (
+                      {filters.map((filter, index) => (
                         <Button
                           key={index}
-                          variant="ghost"
+                          variant={activeFilter === filter.id ? "default" : "ghost"}
                           className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group"
-                          onClick={() => handleShortcutClick(shortcut.name)}
+                          onClick={() => handleFilterClick(filter.id)}
                         >
                           <div className="flex items-center">
-                            <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{shortcut.icon}</span>
+                            <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{filter.icon}</span>
                             <div className="text-left">
-                              <div className="font-medium text-sm">{shortcut.name}</div>
-                              <div className="text-xs text-muted-foreground">{shortcut.count} artisans</div>
+                              <div className="font-medium text-sm">{filter.name}</div>
+                              <div className="text-xs text-muted-foreground">{filter.count} artisans</div>
                             </div>
                           </div>
                           <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
-                            {shortcut.trend}
+                            {filter.trend}
                           </Badge>
                         </Button>
                       ))}

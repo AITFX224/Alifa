@@ -47,11 +47,23 @@ export function usePosts() {
       setPosts((data as any[]) || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les publications",
-        variant: "destructive"
-      });
+      // Fallback: get posts without profiles relation
+      try {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (!fallbackError) {
+          setPosts((fallbackData as any[]) || []);
+        }
+      } catch (fallbackErr) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les publications",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }
