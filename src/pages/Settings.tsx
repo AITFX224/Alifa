@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Settings as SettingsIcon, User, Bell, Shield, Palette, Globe, Smartphone } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Settings as SettingsIcon, User, Bell, Shield, Palette, Globe, Smartphone, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -9,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -186,6 +188,14 @@ const Settings = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* En-tête */}
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="h-10 w-10 rounded-full hover:bg-muted/50"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
           <SettingsIcon className="w-8 h-8" />
           <h1 className="text-3xl font-poppins font-bold">Paramètres</h1>
         </div>
