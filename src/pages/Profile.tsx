@@ -74,15 +74,18 @@ const Profile = () => {
     try {
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
-          display_name: profileData.displayName,
-          bio: profileData.bio,
-          location: profileData.location,
-          phone: profileData.phone,
-          website: profileData.website,
-          updated_at: new Date().toISOString()
-        });
+        .upsert(
+          {
+            user_id: user.id,
+            display_name: profileData.displayName,
+            bio: profileData.bio,
+            location: profileData.location,
+            phone: profileData.phone,
+            website: profileData.website,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id' }
+        );
 
       if (error) {
         toast({
