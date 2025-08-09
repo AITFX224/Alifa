@@ -10,10 +10,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const BecomeArtisan = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -102,21 +105,57 @@ const families: Record<string, string[]> = {
     }
   };
 
-  const handleSubmit = () => {
-    toast({
-      title: "Demande envoyée !",
-      description: "Votre demande d'artisan sera examinée sous 24-48h"
-    });
+  const handleSubmit = async () => {
+    if (!user?.id) {
+      toast({
+        title: "Connexion requise",
+        description: "Veuillez vous connecter pour finaliser votre demande",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
 
-    const params = new URLSearchParams();
-    if (formData.family) params.set("famille", formData.family);
-    if (formData.profession) params.set("sous", formData.profession);
-    if (formData.location) params.set("lieu", formData.location);
-    params.set("section", "artisans");
-    navigate(`/?${params.toString()}`);
+    try {
+      // Attribuer le rôle artisan (idempotent)
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert(
+          { user_id: user.id, role: 'artisan' },
+          { onConflict: 'user_id,role', ignoreDuplicates: true }
+        );
+
+      if (roleError) {
+        console.error('Erreur rôle artisan:', roleError);
+        toast({
+          title: "Attribution de rôle",
+          description: "Rôle artisan non attribué (vous pourrez réessayer depuis votre profil).",
+          variant: "destructive",
+        });
+      }
+
+      toast({
+        title: "Demande envoyée !",
+        description: "Votre demande d'artisan sera examinée sous 24-48h"
+      });
+
+      const params = new URLSearchParams();
+      if (formData.family) params.set("famille", formData.family);
+      if (formData.profession) params.set("sous", formData.profession);
+      if (formData.location) params.set("lieu", formData.location);
+      params.set("section", "artisans");
+      navigate(`/?${params.toString()}`);
+    } catch (e) {
+      console.error('Erreur de soumission artisan:', e);
+      toast({
+        title: "Erreur",
+        description: "Impossible de finaliser la demande pour le moment.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handlePaymentConfirm = () => {
+  const handlePaymentConfirm = async () => {
     localStorage.setItem('artisan_subscription_active', 'true');
     setPaymentConfirmed(true);
     setPaymentDialogOpen(false);
@@ -124,7 +163,7 @@ const families: Record<string, string[]> = {
       title: "Paiement simulé confirmé",
       description: "Abonnement activé: 3 $/mois",
     });
-    handleSubmit();
+    await handleSubmit();
   };
 
   const handleInputChange = (field: string, value: any) => {
