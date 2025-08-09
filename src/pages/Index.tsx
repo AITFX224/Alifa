@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer, TrendingUp, Sparkles, Plus, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,6 +49,15 @@ const Index = () => {
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [likedArtisans, setLikedArtisans] = useState<Set<string>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const section = searchParams.get("section");
+    const hasArtisanParams = searchParams.get("famille") || searchParams.get("sous") || searchParams.get("lieu") || searchParams.get("q");
+    if (section === "artisans" || hasArtisanParams) {
+      setCurrentSection("artisans");
+    }
+  }, [searchParams]);
   
   // Transform real posts to match the expected format
   const transformedPosts = realPosts.map(post => ({
@@ -300,7 +309,7 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                     ? 'bg-primary text-primary-foreground shadow-md' 
                     : 'hover:bg-primary/10 hover:text-primary'
                 }`} 
-                onClick={() => handleSectionChange('artisans')}
+                onClick={() => { handleSectionChange('artisans'); navigate('?section=artisans'); }}
               >
                 <Hammer className="w-4 h-4 mr-2" />
                 Artisans

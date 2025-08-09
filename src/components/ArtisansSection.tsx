@@ -386,7 +386,7 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
             <SelectTrigger className="w-full sm:w-40 md:w-48 bg-muted/20 text-sm md:text-base">
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-popover">
               {categories.map(category => (
                 <SelectItem key={category.id} value={category.id} className="text-sm">
                   <span className="mr-2">{category.icon}</span>
@@ -402,7 +402,7 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
             <SelectTrigger className="w-full sm:w-32 md:w-40 bg-muted/20 text-sm md:text-base">
               <SelectValue placeholder="Lieu" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-popover">
               {locations.map(location => (
                 <SelectItem key={location.id} value={location.id} className="text-sm">
                   <span className="hidden sm:inline">{location.name}</span>
@@ -416,7 +416,7 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
             <SelectTrigger className="w-full sm:w-32 md:w-40 bg-muted/20 text-sm md:text-base">
               <SelectValue placeholder="Tri" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-popover">
               <SelectItem value="rating" className="text-sm">Note</SelectItem>
               <SelectItem value="reviews" className="text-sm">Avis</SelectItem>
               <SelectItem value="projects" className="text-sm">Projets</SelectItem>

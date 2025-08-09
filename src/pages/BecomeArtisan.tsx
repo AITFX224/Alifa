@@ -104,7 +104,8 @@ const families: Record<string, string[]> = {
     if (formData.family) params.set("famille", formData.family);
     if (formData.profession) params.set("sous", formData.profession);
     if (formData.location) params.set("lieu", formData.location);
-    navigate(`/artisans?${params.toString()}`);
+    params.set("section", "artisans");
+    navigate(`/?${params.toString()}`);
   };
 
   const handleInputChange = (field: string, value: any) => {
