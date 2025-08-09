@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Home, Users, Camera, Bell, MessageCircle, Heart, Share, MoreHorizontal, MapPin, Star, Hammer, TrendingUp, Sparkles, Plus, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import { NetworkSection } from "@/components/NetworkSection";
 import { ArtisansSection } from "@/components/ArtisansSection";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 import Logo from "@/components/Logo";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Index = () => {
   const { toast } = useToast();
@@ -106,6 +108,27 @@ const Index = () => {
       title: "Publication partagée",
       description: "Le lien de la publication a été copié",
     });
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId);
+      if (error) throw error;
+      toast({
+        title: "Publication supprimée",
+        description: "Votre publication a été supprimée.",
+      });
+      refetch();
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la publication.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleFilterClick = (filterId: string) => {
@@ -474,9 +497,27 @@ const Index = () => {
                             </div>
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm" className="opacity-60 hover:opacity-100 transition-opacity">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="opacity-60 hover:opacity-100 transition-opacity">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="min-w-[180px]">
+                            <DropdownMenuItem onClick={() => handleSharePost(post.id.toString())}>
+                              Partager
+                            </DropdownMenuItem>
+                            {user?.id === post.user_id ? (
+                              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDeletePost(post.id.toString())}>
+                                Supprimer
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem onClick={() => toast({ title: "Signalé", description: "Merci pour votre signalement" })}>
+                                Signaler
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
 
                       {/* Contenu */}
