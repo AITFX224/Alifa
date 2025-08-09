@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from '@supabase/supabase-js';
+import Logo from "@/components/Logo";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -243,14 +244,7 @@ const Auth = () => {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-gradient-brand rounded-2xl mx-auto flex items-center justify-center shadow-glow mb-4">
-              <span className="text-2xl font-bold text-white">A</span>
-            </div>
-          </div>
-          <h1 className="text-4xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent mb-2">
-            Alifa
-          </h1>
+            <Logo className="h-16 mx-auto mb-2" alt="Alifa - Logo" />
           <p className="text-muted-foreground text-lg">
             {isResetPassword 
               ? "Réinitialisez votre mot de passe" 

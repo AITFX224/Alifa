@@ -22,6 +22,7 @@ import { SearchMobile } from "@/components/SearchMobile";
 import { NetworkSection } from "@/components/NetworkSection";
 import { ArtisansSection } from "@/components/ArtisansSection";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
+import Logo from "@/components/Logo";
 
 const Index = () => {
   const { toast } = useToast();
@@ -163,12 +164,7 @@ const Index = () => {
             {/* Logo et recherche */}
             <div className="flex items-center space-x-8 flex-1">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-brand rounded-xl flex items-center justify-center shadow-glow">
-                  <span className="text-lg font-bold text-white">A</span>
-                </div>
-                <span className="text-2xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent">
-                  Alifa
-                </span>
+                <Logo className="h-10" alt="Alifa - Logo" />
               </div>
               
               <div className="relative max-w-lg">

@@ -5,6 +5,7 @@ import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
+import Logo from "@/components/Logo";
 
 interface MobileNavigationProps {
   currentSection: string;
@@ -82,9 +83,7 @@ export const MobileNavigation = ({ currentSection, onSectionChange }: MobileNavi
       {/* Mobile Header */}
       <div className="md:hidden sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center justify-between px-4 py-3">
-          <h1 className="text-xl font-poppins font-bold bg-gradient-brand bg-clip-text text-transparent">
-            Alifa
-          </h1>
+          <Logo className="h-6" alt="Alifa - Logo" />
           
           <div className="flex items-center space-x-3">
             <Button
