@@ -408,8 +408,10 @@ const Index = () => {
                   <CardContent className="p-5">
                     <div className="flex items-center space-x-4">
                       <Avatar className="w-11 h-11">
-                        <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback className="bg-gradient-brand text-white">V</AvatarFallback>
+                        <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt={`Avatar de ${profile?.display_name || 'utilisateur'}`} />
+                        <AvatarFallback className="bg-gradient-brand text-white">
+                          {(profile?.display_name?.[0] || 'U').toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                       <CreatePostDialog>
                         <Button variant="outline" className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300">
