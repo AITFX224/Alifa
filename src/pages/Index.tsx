@@ -28,6 +28,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { EditPostDialog } from "@/components/EditPostDialog";
 import { useLikes } from "@/hooks/useLikes";
 import { CommentsSection } from "@/components/CommentsSection";
+import { useRoles } from "@/hooks/useRoles";
+import { useAccountMode } from "@/hooks/useAccountMode";
 const Index = () => {
   const {
     toast
@@ -60,6 +62,8 @@ const Index = () => {
   const {
     profile
   } = useCurrentProfile();
+  const { hasRole } = useRoles();
+  const { isArtisanMode } = useAccountMode();
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
@@ -331,6 +335,22 @@ const Index = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {hasRole('artisan') && isArtisanMode && (
+          <Card className="bg-success/5 border border-success/20 rounded-xl mb-6">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center">
+                  <Hammer className="w-4 h-4 text-success" />
+                </div>
+                <div>
+                  <p className="font-medium">Mode artisan actif</p>
+                  <p className="text-sm text-muted-foreground">Vos outils professionnels sont affichés en priorité.</p>
+                </div>
+              </div>
+              <Badge variant="secondary">Artisan</Badge>
+            </CardContent>
+          </Card>
+        )}
         {/* Mobile Content */}
         <div className="md:hidden safe-area-pt">
           {currentSection === 'search' && <SearchMobile onShortcutClick={handleFilterClick} onFollowArtisan={handleFollowArtisan} followedArtisans={followedArtisans} />}

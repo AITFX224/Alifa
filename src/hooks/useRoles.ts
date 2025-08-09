@@ -7,22 +7,22 @@ export type AppRole = 'user' | 'artisan' | 'admin';
 export const useRoles = () => {
   const { user } = useAuth();
 
-  const { data, isLoading, error, refetch } = useQuery<{ role: AppRole }[] | undefined>({
+  const { data, isLoading, error, refetch } = useQuery<AppRole[]>({
     queryKey: ["user_roles", user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from('user_roles')
+      if (!user?.id) return [] as AppRole[];
+      const { data, error } = await (supabase as any)
+        .from('user_roles' as any)
         .select('role')
         .eq('user_id', user.id);
       if (error) throw error;
-      return data as { role: AppRole }[];
+      return ((data as any[]) ?? []).map((r: any) => r.role as AppRole);
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60, // 1 min
   });
 
-  const roles: AppRole[] = (data ?? []).map((r) => r.role);
+  const roles: AppRole[] = data ?? [];
   const hasRole = (role: AppRole) => roles.includes(role);
 
   return { roles, hasRole, isLoading, error, refetch };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Settings, LogOut, Star, Bell, Shield, HelpCircle, Moon, Sun } from "lucide-react";
+import { User, Settings, LogOut, Star, Bell, Shield, HelpCircle, Moon, Sun, Hammer } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
+import { useRoles } from "@/hooks/useRoles";
+import { useAccountMode } from "@/hooks/useAccountMode";
 
 interface UserProfileMenuProps {
   children: React.ReactNode;
@@ -54,6 +56,8 @@ export function UserProfileMenu({
   };
 
   const { profile } = useCurrentProfile();
+  const { hasRole } = useRoles();
+  const { mode, setMode, isArtisanMode } = useAccountMode();
   return <Popover>
       <PopoverTrigger asChild>
         {children}
@@ -105,6 +109,31 @@ export function UserProfileMenu({
             <Shield className="w-4 h-4 mr-3" />
             Confidentialité et sécurité
           </Button>
+
+          {/* Mode artisan toggle or CTA */}
+          {hasRole('artisan') ? (
+            <div className="flex items-center justify-between p-3 hover:bg-muted/30 rounded-md">
+              <div className="flex items-center">
+                <Hammer className="w-4 h-4 mr-3" />
+                Mode artisan
+              </div>
+              <Switch
+                checked={isArtisanMode}
+                onCheckedChange={(checked) => {
+                  setMode(checked ? 'artisan' : 'user');
+                  toast({
+                    title: checked ? "Mode artisan activé" : "Mode utilisateur activé",
+                    description: checked ? "Vos fonctionnalités pro sont priorisées." : "Retour au mode utilisateur.",
+                  });
+                }}
+              />
+            </div>
+          ) : (
+            <Button variant="ghost" className="w-full justify-start p-3 hover:bg-primary/10" onClick={() => navigate('/become-artisan')}>
+              <Hammer className="w-4 h-4 mr-3" />
+              Devenir artisan
+            </Button>
+          )}
 
           {/* Dark Mode Toggle */}
           <div className="flex items-center justify-between p-3 hover:bg-muted/30 rounded-md">
