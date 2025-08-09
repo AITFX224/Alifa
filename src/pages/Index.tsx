@@ -26,6 +26,8 @@ import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 import Logo from "@/components/Logo";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { EditPostDialog } from "@/components/EditPostDialog";
+import { useLikes } from "@/hooks/useLikes";
+import { CommentsSection } from "@/components/CommentsSection";
 
 const Index = () => {
   const { toast } = useToast();
@@ -72,8 +74,70 @@ const Index = () => {
 
   // Apply filters to posts
   const posts = filterPosts(transformedPosts);
-  
-  
+
+// Desktop interactions for a post (likes + comments)
+type DesktopPostInteractionsProps = {
+  post: { id: string; comments: number; shares: number };
+  onShare: (id: string) => void;
+};
+
+const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps) => {
+  const { isLiked, likesCount, toggleLike, loading } = useLikes(post.id);
+  const [showComments, setShowComments] = useState(false);
+
+  return (
+    <>
+      <div className="p-5">
+        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+          <div className="flex items-center space-x-4">
+            <span className="hover:text-destructive cursor-pointer transition-colors">
+              {likesCount} mentions J'aime
+            </span>
+            <span className="hover:text-primary cursor-pointer transition-colors">
+              {post.comments} commentaires
+            </span>
+            <span className="hover:text-secondary cursor-pointer transition-colors">
+              {post.shares} partages
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center border-t border-border/50 pt-3">
+          <Button 
+            variant="ghost" 
+            className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${isLiked ? 'text-destructive' : ''}`}
+            onClick={toggleLike}
+            disabled={loading}
+          >
+            <Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
+            J'aime
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200"
+            onClick={() => setShowComments(v => !v)}
+          >
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Commenter
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200"
+            onClick={() => onShare(post.id)}
+          >
+            <Share className="w-4 h-4 mr-2" />
+            Partager
+          </Button>
+        </div>
+      </div>
+      <CommentsSection 
+        postId={post.id}
+        isOpen={showComments}
+        onToggle={() => setShowComments(v => !v)}
+      />
+    </>
+  );
+};
+
 
   // Suggestions d'artisans depuis la base de données
   const suggestions = artisans.slice(0, 4).map(artisan => ({
@@ -553,36 +617,11 @@ const Index = () => {
                         </div>
                       )}
 
-                      {/* Actions */}
-                      <div className="p-5">
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                          <div className="flex items-center space-x-4">
-                            <span className="hover:text-destructive cursor-pointer transition-colors">
-                              {post.likes} mentions J'aime
-                            </span>
-                            <span className="hover:text-primary cursor-pointer transition-colors">
-                              {post.comments} commentaires
-                            </span>
-                            <span className="hover:text-secondary cursor-pointer transition-colors">
-                              {post.shares} partages
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center border-t border-border/50 pt-3">
-                          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200`}>
-                            <Heart className={`w-4 h-4 mr-2`} />
-                            J'aime
-                          </Button>
-                          <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200">
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Commenter
-                          </Button>
-                          <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => handleSharePost(post.id.toString())}>
-                            <Share className="w-4 h-4 mr-2" />
-                            Partager
-                          </Button>
-                        </div>
-                      </div>
+                      {/* Interactions (likes + commentaires) */}
+                      <DesktopPostInteractions 
+                        post={{ id: post.id, comments: post.comments, shares: post.shares }}
+                        onShare={(id) => handleSharePost(id)}
+                      />
                     </CardContent>
                   </Card>
                 ))}
