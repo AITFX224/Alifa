@@ -25,6 +25,7 @@ import { ArtisansSection } from "@/components/ArtisansSection";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 import Logo from "@/components/Logo";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { EditPostDialog } from "@/components/EditPostDialog";
 
 const Index = () => {
   const { toast } = useToast();
@@ -508,9 +509,25 @@ const Index = () => {
                               Partager
                             </DropdownMenuItem>
                             {user?.id === post.user_id ? (
-                              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDeletePost(post.id.toString())}>
-                                Supprimer
-                              </DropdownMenuItem>
+                              <>
+                                <DropdownMenuItem asChild>
+                                  <EditPostDialog 
+                                    post={{
+                                      id: post.id,
+                                      content: post.content,
+                                      location: post.location,
+                                      event_title: post.event_title,
+                                      event_description: post.event_description,
+                                      event_date: post.event_date,
+                                      event_time: post.event_time
+                                    }}
+                                    onPostUpdated={refetch}
+                                  />
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDeletePost(post.id.toString())}>
+                                  Supprimer
+                                </DropdownMenuItem>
+                              </>
                             ) : (
                               <DropdownMenuItem onClick={() => toast({ title: "Signalé", description: "Merci pour votre signalement" })}>
                                 Signaler
