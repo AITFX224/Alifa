@@ -279,7 +279,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] p-0 bg-card/95 backdrop-blur-md border border-border/50">
+      <DialogContent className="sm:max-w-[600px] p-0 bg-card/95 backdrop-blur-md border border-border/50 flex flex-col max-h-[85vh]">
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="text-xl font-poppins font-semibold">Créer une publication</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -287,7 +287,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
           </DialogDescription>
         </DialogHeader>
         
-        <div className="px-6 space-y-4">
+        <div className="px-6 space-y-4 flex-1 overflow-y-auto">
           {/* User info */}
           <div className="flex items-center space-x-3">
             <Avatar className="w-11 h-11">
