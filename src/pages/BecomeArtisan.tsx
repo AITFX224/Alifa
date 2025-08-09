@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Hammer, Star, Users, Trophy, ArrowRight, ArrowLeft, Check, Upload, MapPin, X } from "lucide-react";
+import { Hammer, Star, Users, Trophy, ArrowRight, ArrowLeft, Check, Upload, MapPin, X, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +17,8 @@ const BecomeArtisan = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 const [formData, setFormData] = useState({
     businessName: "",
     family: "",
@@ -91,19 +94,15 @@ const families: Record<string, string[]> = {
     if (step < 3) {
       setStep(step + 1);
     } else {
-      handleSubmit();
+      if (!paymentConfirmed) {
+        setPaymentDialogOpen(true);
+      } else {
+        handleSubmit();
+      }
     }
   };
 
   const handleSubmit = () => {
-    // Simulation de paiement d'abonnement (3 $/mois)
-    localStorage.setItem('artisan_subscription_active', 'true');
-
-    toast({
-      title: "Paiement simulé confirmé",
-      description: "Abonnement activé: 3 $/mois",
-    });
-
     toast({
       title: "Demande envoyée !",
       description: "Votre demande d'artisan sera examinée sous 24-48h"
@@ -115,6 +114,17 @@ const families: Record<string, string[]> = {
     if (formData.location) params.set("lieu", formData.location);
     params.set("section", "artisans");
     navigate(`/?${params.toString()}`);
+  };
+
+  const handlePaymentConfirm = () => {
+    localStorage.setItem('artisan_subscription_active', 'true');
+    setPaymentConfirmed(true);
+    setPaymentDialogOpen(false);
+    toast({
+      title: "Paiement simulé confirmé",
+      description: "Abonnement activé: 3 $/mois",
+    });
+    handleSubmit();
   };
 
   const handleInputChange = (field: string, value: any) => {
@@ -445,6 +455,24 @@ const families: Record<string, string[]> = {
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
+
+        <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Paiement d'abonnement (simulation)</DialogTitle>
+              <DialogDescription>
+                Abonnement: 3 $/mois. Le paiement est simulé pour les tests.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 text-sm">
+              <p>Cette étape est requise pour activer votre statut d'artisan vérifié.</p>
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setPaymentDialogOpen(false)}>Annuler</Button>
+              <Button onClick={handlePaymentConfirm} className="gap-2">Payer 3 $/mois (simulation)</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
