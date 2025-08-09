@@ -3,7 +3,6 @@ import { z } from 'zod';
 // Post validation schemas
 export const createPostSchema = z.object({
   content: z.string()
-    .min(1, "Le contenu ne peut pas être vide")
     .max(2000, "Le contenu ne peut pas dépasser 2000 caractères"),
   event_title: z.string()
     .max(100, "Le titre ne peut pas dépasser 100 caractères")
@@ -16,6 +15,16 @@ export const createPostSchema = z.object({
     .optional(),
   event_date: z.string().optional(),
   event_time: z.string().optional(),
+}).superRefine((data, ctx) => {
+  const hasContent = data.content?.trim().length > 0;
+  const hasEvent = Boolean(data.event_title || data.event_date || data.event_time);
+  if (!hasContent && !hasEvent) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Ajoutez du contenu ou un événement.",
+      path: ['content'],
+    });
+  }
 });
 
 export const commentSchema = z.object({

@@ -88,10 +88,10 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
       return;
     }
 
-    if (!content.trim() && mediaFiles.length === 0) {
+    if (!content.trim() && mediaFiles.length === 0 && !event) {
       toast({
         title: "Erreur",
-        description: "Veuillez écrire quelque chose ou ajouter des médias avant de publier.",
+        description: "Veuillez écrire quelque chose, ajouter des médias ou un événement avant de publier.",
         variant: "destructive"
       });
       return;
@@ -571,7 +571,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
           <Button 
             onClick={handlePost}
             className="w-full btn-gradient"
-            disabled={(!content.trim() && mediaFiles.length === 0) || uploading}
+            disabled={(!content.trim() && mediaFiles.length === 0 && !event) || uploading}
           >
             {uploading ? (
               <>
