@@ -17,6 +17,7 @@ import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 interface CreatePostDialogProps {
   children: React.ReactNode;
   onPostCreated?: () => void;
+  startWithEventForm?: boolean;
 }
 
 interface MediaFile {
@@ -32,7 +33,7 @@ interface Event {
   description: string;
 }
 
-export function CreatePostDialog({ children, onPostCreated }: CreatePostDialogProps) {
+export function CreatePostDialog({ children, onPostCreated, startWithEventForm }: CreatePostDialogProps) {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -279,7 +280,7 @@ export function CreatePostDialog({ children, onPostCreated }: CreatePostDialogPr
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v && startWithEventForm) setShowEventForm(true); }}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

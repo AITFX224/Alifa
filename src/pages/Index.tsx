@@ -457,13 +457,12 @@ const Index = () => {
                         <MapPin className="w-4 h-4 mr-2" />
                         Localisation
                       </Button>
-                      <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
-                        title: "Événement",
-                        description: "Création d'événement..."
-                      })}>
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Événement
-                      </Button>
+                      <CreatePostDialog onPostCreated={refetch} startWithEventForm>
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          Événement
+                        </Button>
+                      </CreatePostDialog>
                     </div>
                   </CardContent>
                 </Card>
