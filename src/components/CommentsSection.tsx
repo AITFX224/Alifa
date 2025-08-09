@@ -83,9 +83,9 @@ export const CommentsSection = ({ postId, isOpen, onToggle }: CommentsSectionPro
                     size="sm" 
                     disabled={!newComment.trim() || submitting}
                     className="ml-auto"
+                    aria-label={submitting ? "Envoi..." : "Envoyer"}
                   >
-                    <Send className="h-4 w-4 mr-1" />
-                    {submitting ? "Envoi..." : "Publier"}
+                    <Send className={`h-4 w-4 ${submitting ? 'animate-spin' : ''}`} />
                   </Button>
                 </div>
               </div>
