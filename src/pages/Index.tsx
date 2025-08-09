@@ -28,30 +28,49 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { EditPostDialog } from "@/components/EditPostDialog";
 import { useLikes } from "@/hooks/useLikes";
 import { CommentsSection } from "@/components/CommentsSection";
-
 const Index = () => {
-  const { toast } = useToast();
-  const { user, loading, signOut } = useAuth();
-  const { posts: realPosts, loading: postsLoading, refetch } = usePosts();
-  const { filters, activeFilter, applyFilter, filterPosts } = useFilters();
-  const { artisans, loading: artisansLoading } = useArtisans();
-  const { trendingTopics, loading: trendingLoading } = useTrendingTopics();
+  const {
+    toast
+  } = useToast();
+  const {
+    user,
+    loading,
+    signOut
+  } = useAuth();
+  const {
+    posts: realPosts,
+    loading: postsLoading,
+    refetch
+  } = usePosts();
+  const {
+    filters,
+    activeFilter,
+    applyFilter,
+    filterPosts
+  } = useFilters();
+  const {
+    artisans,
+    loading: artisansLoading
+  } = useArtisans();
+  const {
+    trendingTopics,
+    loading: trendingLoading
+  } = useTrendingTopics();
   const navigate = useNavigate();
-  const { profile } = useCurrentProfile();
-
+  const {
+    profile
+  } = useCurrentProfile();
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
-
   const [followedArtisans, setFollowedArtisans] = useState<Set<string>>(new Set());
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [likedArtisans, setLikedArtisans] = useState<Set<string>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
   const [searchParams] = useSearchParams();
   const [subscriptionActive, setSubscriptionActive] = useState<boolean>(false);
-
   useEffect(() => {
     const section = searchParams.get("section");
     const hasArtisanParams = searchParams.get("famille") || searchParams.get("sous") || searchParams.get("lieu") || searchParams.get("q");
@@ -71,10 +90,11 @@ const Index = () => {
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
   }, []);
-  
+
   // Transform real posts to match the expected format
   const transformedPosts = realPosts.map(post => ({
-    id: post.id, // Keep as UUID string
+    id: post.id,
+    // Keep as UUID string
     author: post.profiles?.display_name || 'Utilisateur',
     profession: post.profiles?.profession || 'Artisan',
     location: post.location || 'Guinée',
@@ -97,18 +117,27 @@ const Index = () => {
   // Apply filters to posts
   const posts = filterPosts(transformedPosts);
 
-// Desktop interactions for a post (likes + comments)
-type DesktopPostInteractionsProps = {
-  post: { id: string; comments: number; shares: number };
-  onShare: (id: string) => void;
-};
-
-const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps) => {
-  const { isLiked, likesCount, toggleLike, loading } = useLikes(post.id);
-  const [showComments, setShowComments] = useState(false);
-
-  return (
-    <>
+  // Desktop interactions for a post (likes + comments)
+  type DesktopPostInteractionsProps = {
+    post: {
+      id: string;
+      comments: number;
+      shares: number;
+    };
+    onShare: (id: string) => void;
+  };
+  const DesktopPostInteractions = ({
+    post,
+    onShare
+  }: DesktopPostInteractionsProps) => {
+    const {
+      isLiked,
+      likesCount,
+      toggleLike,
+      loading
+    } = useLikes(post.id);
+    const [showComments, setShowComments] = useState(false);
+    return <>
       <div className="p-5">
         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
           <div className="flex items-center space-x-4">
@@ -124,42 +153,23 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
           </div>
         </div>
         <div className="flex items-center border-t border-border/50 pt-3">
-          <Button 
-            variant="ghost" 
-            className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${isLiked ? 'text-destructive' : ''}`}
-            onClick={toggleLike}
-            disabled={loading}
-          >
+          <Button variant="ghost" className={`flex-1 hover:bg-destructive/10 hover:text-destructive transition-all duration-200 ${isLiked ? 'text-destructive' : ''}`} onClick={toggleLike} disabled={loading}>
             <Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
             J'aime
           </Button>
-          <Button 
-            variant="ghost" 
-            className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200"
-            onClick={() => setShowComments(v => !v)}
-          >
+          <Button variant="ghost" className="flex-1 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => setShowComments(v => !v)}>
             <MessageCircle className="w-4 h-4 mr-2" />
             Commenter
           </Button>
-          <Button 
-            variant="ghost" 
-            className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200"
-            onClick={() => onShare(post.id)}
-          >
+          <Button variant="ghost" className="flex-1 hover:bg-secondary/10 hover:text-secondary transition-all duration-200" onClick={() => onShare(post.id)}>
             <Share className="w-4 h-4 mr-2" />
             Partager
           </Button>
         </div>
       </div>
-      <CommentsSection 
-        postId={post.id}
-        isOpen={showComments}
-        onToggle={() => setShowComments(v => !v)}
-      />
-    </>
-  );
-};
-
+      <CommentsSection postId={post.id} isOpen={showComments} onToggle={() => setShowComments(v => !v)} />
+    </>;
+  };
 
   // Suggestions d'artisans depuis la base de données
   const suggestions = artisans.slice(0, 4).map(artisan => ({
@@ -169,8 +179,6 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
     rating: artisan.rating,
     mutual: Math.floor(Math.random() * 10) + 1 // Temporaire - en attendant la logique des amis communs
   }));
-
-
   const handleFollowArtisan = (artisanName: string) => {
     const isFollowed = followedArtisans.has(artisanName);
     const newFollowed = new Set(followedArtisans);
@@ -185,28 +193,24 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
       description: isFollowed ? `Vous ne suivez plus ${artisanName}` : `Vous suivez maintenant ${artisanName}`
     });
   };
-
   const handleSectionChange = (section: string) => {
     setCurrentSection(section);
   };
-
   const handleSharePost = (postId: string) => {
     toast({
       title: "Publication partagée",
-      description: "Le lien de la publication a été copié",
+      description: "Le lien de la publication a été copié"
     });
   };
-
   const handleDeletePost = async (postId: string) => {
     try {
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', postId);
+      const {
+        error
+      } = await supabase.from('posts').delete().eq('id', postId);
       if (error) throw error;
       toast({
         title: "Publication supprimée",
-        description: "Votre publication a été supprimée.",
+        description: "Votre publication a été supprimée."
       });
       refetch();
     } catch (err) {
@@ -217,7 +221,6 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
       });
     }
   };
-
   const handleFilterClick = (filterId: string) => {
     applyFilter(filterId);
     const filter = filters.find(f => f.id === filterId);
@@ -226,44 +229,35 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
       description: `Affichage: ${filter?.name || filterId}`
     });
   };
-
   const handleContactArtisan = (artisanName: string) => {
     toast({
       title: "Contact initié",
       description: `Ouverture de la conversation avec ${artisanName}`
     });
   };
-
   const handleLikeArtisan = (artisanId: string) => {
     const isLiked = likedArtisans.has(artisanId);
     const newLikedArtisans = new Set(likedArtisans);
-    
     if (isLiked) {
       newLikedArtisans.delete(artisanId);
     } else {
       newLikedArtisans.add(artisanId);
     }
-    
     setLikedArtisans(newLikedArtisans);
     toast({
       title: isLiked ? "Like retiré" : "Artisan aimé !",
       description: isLiked ? "Vous n'aimez plus cet artisan" : "Artisan ajouté à vos favoris"
     });
   };
-
   if (loading || postsLoading || artisansLoading || trendingLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center space-y-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-muted-foreground">Chargement...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
       {/* Mobile Navigation */}
       <MobileNavigation currentSection={currentSection} onSectionChange={handleSectionChange} />
 
@@ -279,56 +273,27 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
               
               <div className="relative max-w-lg">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input 
-                  placeholder="Rechercher des artisans, métiers..." 
-                  className="pl-12 pr-4 h-12 bg-muted/20 border-border/40 backdrop-blur-sm w-80 focus:bg-card/60 focus:border-primary/40 transition-all duration-300 rounded-xl text-base" 
-                />
+                <Input placeholder="Rechercher des artisans, métiers..." className="pl-12 pr-4 h-12 bg-muted/20 border-border/40 backdrop-blur-sm w-80 focus:bg-card/60 focus:border-primary/40 transition-all duration-300 rounded-xl text-base" />
               </div>
             </div>
 
             {/* Navigation centrale */}
             <div className="flex items-center space-x-2 bg-muted/20 rounded-xl p-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`px-4 py-2 transition-all duration-300 rounded-lg ${
-                  currentSection === 'home' 
-                    ? 'bg-primary text-primary-foreground shadow-md' 
-                    : 'hover:bg-primary/10 hover:text-primary'
-                }`} 
-                onClick={() => handleSectionChange('home')}
-              >
+              <Button variant="ghost" size="sm" className={`px-4 py-2 transition-all duration-300 rounded-lg ${currentSection === 'home' ? 'bg-primary text-primary-foreground shadow-md' : 'hover:bg-primary/10 hover:text-primary'}`} onClick={() => handleSectionChange('home')}>
                 <Home className="w-4 h-4 mr-2" />
                 Accueil
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`px-4 py-2 transition-all duration-300 rounded-lg ${
-                  currentSection === 'users' 
-                    ? 'bg-primary text-primary-foreground shadow-md' 
-                    : 'hover:bg-primary/10 hover:text-primary'
-                }`} 
-                onClick={() => handleSectionChange('users')}
-              >
+              <Button variant="ghost" size="sm" className={`px-4 py-2 transition-all duration-300 rounded-lg ${currentSection === 'users' ? 'bg-primary text-primary-foreground shadow-md' : 'hover:bg-primary/10 hover:text-primary'}`} onClick={() => handleSectionChange('users')}>
                 <Users className="w-4 h-4 mr-2" />
                 Réseau
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`px-4 py-2 transition-all duration-300 rounded-lg ${
-                  currentSection === 'artisans' 
-                    ? 'bg-primary text-primary-foreground shadow-md' 
-                    : 'hover:bg-primary/10 hover:text-primary'
-                }`} 
-                onClick={() => { handleSectionChange('artisans'); navigate('?section=artisans'); }}
-              >
+              <Button variant="ghost" size="sm" className={`px-4 py-2 transition-all duration-300 rounded-lg ${currentSection === 'artisans' ? 'bg-primary text-primary-foreground shadow-md' : 'hover:bg-primary/10 hover:text-primary'}`} onClick={() => {
+              handleSectionChange('artisans');
+              navigate('?section=artisans');
+            }}>
                 <Hammer className="w-4 h-4 mr-2" />
                 <span className="mr-1">Artisans</span>
-                {subscriptionActive && (
-                  <Badge variant="secondary" className="ml-1">Actif</Badge>
-                )}
+                {subscriptionActive}
               </Button>
             </div>
 
@@ -368,35 +333,17 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Mobile Content */}
         <div className="md:hidden safe-area-pt">
-          {currentSection === 'search' && (
-            <SearchMobile 
-              onShortcutClick={handleFilterClick} 
-              onFollowArtisan={handleFollowArtisan} 
-              followedArtisans={followedArtisans} 
-            />
-          )}
+          {currentSection === 'search' && <SearchMobile onShortcutClick={handleFilterClick} onFollowArtisan={handleFollowArtisan} followedArtisans={followedArtisans} />}
           
-          {currentSection === 'users' && (
-            <div className="pb-20 safe-area-pb">
-              <NetworkSection 
-                onFollowUser={handleFollowArtisan}
-                followedUsers={followedArtisans}
-              />
-            </div>
-          )}
+          {currentSection === 'users' && <div className="pb-20 safe-area-pb">
+              <NetworkSection onFollowUser={handleFollowArtisan} followedUsers={followedArtisans} />
+            </div>}
           
-          {currentSection === 'artisans' && (
-            <div className="pb-20 safe-area-pb">
-              <ArtisansSection 
-                onContactArtisan={handleContactArtisan}
-                onLikeArtisan={handleLikeArtisan}
-                likedArtisans={likedArtisans}
-              />
-            </div>
-          )}
+          {currentSection === 'artisans' && <div className="pb-20 safe-area-pb">
+              <ArtisansSection onContactArtisan={handleContactArtisan} onLikeArtisan={handleLikeArtisan} likedArtisans={likedArtisans} />
+            </div>}
           
-          {currentSection === 'home' && (
-            <div className="space-y-3 pb-20 safe-area-pb">
+          {currentSection === 'home' && <div className="space-y-3 pb-20 safe-area-pb">
               {/* Welcome Message for Mobile */}
               <Card className="bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm border border-primary/20 rounded-xl mx-3">
                 <CardContent className="p-4">
@@ -431,51 +378,44 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
 
               {/* Mobile Posts */}
               <div className="px-3 space-y-3">
-                {transformedPosts.map((post, index) => (
-                  <div key={post.id} className="animate-fade-in" style={{
-                    animationDelay: `${0.1 * index}s`
-                  }}>
-                     <MobilePostCard
-                        post={{
-                          id: post.id, // Keep UUID as string
-                          content: post.content,
-                          created_at: post.time,
-                          likes_count: post.likes,
-                          comments_count: post.comments,
-                          shares_count: post.shares,
-                          media_urls: post.image && post.image !== "/placeholder.svg" ? [post.image] : null,
-                          location: post.location,
-                          user_id: post.user_id,
-                          event_title: post.event_title,
-                          event_description: post.event_description,
-                          event_date: post.event_date,
-                          event_time: post.event_time,
-                          author: {
-                            name: post.profiles?.display_name || "Utilisateur anonyme",
-                            avatar: post.profiles?.avatar_url || "/placeholder.svg",
-                            location: post.location || "Localisation inconnue",
-                            time: new Date(post.time).toLocaleDateString('fr-FR', {
-                              day: 'numeric',
-                              month: 'short',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })
-                          }
-                        }}
-                        onShare={(id) => handleSharePost(id)}
-                        onPostUpdated={refetch}
-                     />
-                  </div>
-                ))}
+                {transformedPosts.map((post, index) => <div key={post.id} className="animate-fade-in" style={{
+              animationDelay: `${0.1 * index}s`
+            }}>
+                     <MobilePostCard post={{
+                id: post.id,
+                // Keep UUID as string
+                content: post.content,
+                created_at: post.time,
+                likes_count: post.likes,
+                comments_count: post.comments,
+                shares_count: post.shares,
+                media_urls: post.image && post.image !== "/placeholder.svg" ? [post.image] : null,
+                location: post.location,
+                user_id: post.user_id,
+                event_title: post.event_title,
+                event_description: post.event_description,
+                event_date: post.event_date,
+                event_time: post.event_time,
+                author: {
+                  name: post.profiles?.display_name || "Utilisateur anonyme",
+                  avatar: post.profiles?.avatar_url || "/placeholder.svg",
+                  location: post.location || "Localisation inconnue",
+                  time: new Date(post.time).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })
+                }
+              }} onShare={id => handleSharePost(id)} onPostUpdated={refetch} />
+                  </div>)}
               </div>
-            </div>
-          )}
+            </div>}
         </div>
 
         {/* Desktop Layout - Hidden on mobile */}
         <div className="hidden md:block">
-          {currentSection === "home" && (
-            <div className="grid grid-cols-12 gap-6">
+          {currentSection === "home" && <div className="grid grid-cols-12 gap-6">
               {/* Sidebar gauche */}
               <div className="col-span-3 space-y-6">
                 <Card className="card-enhanced animate-fade-in">
@@ -483,20 +423,12 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-poppins font-semibold text-lg">Filtres</h3>
                       <TrendingUp className="w-4 h-4 text-success" />
-                      {activeFilter !== "all" && (
-                        <Badge variant="outline" className="text-xs">
+                      {activeFilter !== "all" && <Badge variant="outline" className="text-xs">
                           {filters.find(f => f.id === activeFilter)?.name}
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
                     <div className="space-y-3">
-                      {filters.map((filter, index) => (
-                        <Button
-                          key={index}
-                          variant={activeFilter === filter.id ? "default" : "ghost"}
-                          className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group"
-                          onClick={() => handleFilterClick(filter.id)}
-                        >
+                      {filters.map((filter, index) => <Button key={index} variant={activeFilter === filter.id ? "default" : "ghost"} className="w-full justify-between p-3 hover:bg-muted/50 transition-all duration-200 group" onClick={() => handleFilterClick(filter.id)}>
                           <div className="flex items-center">
                             <span className="mr-3 text-xl group-hover:animate-bounce-subtle">{filter.icon}</span>
                             <div className="text-left">
@@ -507,8 +439,7 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                           <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
                             {filter.trend}
                           </Badge>
-                        </Button>
-                      ))}
+                        </Button>)}
                     </div>
                   </CardContent>
                 </Card>
@@ -540,9 +471,9 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                         </Button>
                       </CreatePostDialog>
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => toast({
-                        title: "Localisation",
-                        description: "Ajout de localisation..."
-                      })}>
+                    title: "Localisation",
+                    description: "Ajout de localisation..."
+                  })}>
                         <MapPin className="w-4 h-4 mr-2" />
                         Localisation
                       </Button>
@@ -557,10 +488,9 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                 </Card>
 
                 {/* Publications */}
-                {posts.map((post, index) => (
-                  <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{
-                    animationDelay: `${0.1 * index}s`
-                  }}>
+                {posts.map((post, index) => <Card key={post.id} className="card-enhanced animate-fade-in hover:shadow-glow transition-all duration-500" style={{
+              animationDelay: `${0.1 * index}s`
+            }}>
                     <CardContent className="p-0">
                       {/* En-tête du post */}
                       <div className="p-5 flex items-center justify-between">
@@ -596,31 +526,27 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                             <DropdownMenuItem onClick={() => handleSharePost(post.id.toString())}>
                               Partager
                             </DropdownMenuItem>
-                            {user?.id === post.user_id ? (
-                              <>
+                            {user?.id === post.user_id ? <>
                                 <DropdownMenuItem asChild>
-                                  <EditPostDialog 
-                                    post={{
-                                      id: post.id,
-                                      content: post.content,
-                                      location: post.location,
-                                      event_title: post.event_title,
-                                      event_description: post.event_description,
-                                      event_date: post.event_date,
-                                      event_time: post.event_time
-                                    }}
-                                    onPostUpdated={refetch}
-                                  />
+                                  <EditPostDialog post={{
+                            id: post.id,
+                            content: post.content,
+                            location: post.location,
+                            event_title: post.event_title,
+                            event_description: post.event_description,
+                            event_date: post.event_date,
+                            event_time: post.event_time
+                          }} onPostUpdated={refetch} />
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDeletePost(post.id.toString())}>
                                   Supprimer
                                 </DropdownMenuItem>
-                              </>
-                            ) : (
-                              <DropdownMenuItem onClick={() => toast({ title: "Signalé", description: "Merci pour votre signalement" })}>
+                              </> : <DropdownMenuItem onClick={() => toast({
+                        title: "Signalé",
+                        description: "Merci pour votre signalement"
+                      })}>
                                 Signaler
-                              </DropdownMenuItem>
-                            )}
+                              </DropdownMenuItem>}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -631,37 +557,30 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                       </div>
 
                       {/* Image */}
-                      {post.image && post.image !== "/placeholder.svg" && (
-                        <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
-                          <img 
-                            src={post.image} 
-                            alt="Post media" 
-                            className="w-full h-full object-cover"
-                          />
+                      {post.image && post.image !== "/placeholder.svg" && <div className="aspect-video bg-gradient-to-br from-muted via-muted/50 to-muted/20 relative overflow-hidden">
+                          <img src={post.image} alt="Post media" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                        </div>
-                      )}
+                        </div>}
 
                       {/* Interactions (likes + commentaires) */}
-                      <DesktopPostInteractions 
-                        post={{ id: post.id, comments: post.comments, shares: post.shares }}
-                        onShare={(id) => handleSharePost(id)}
-                      />
+                      <DesktopPostInteractions post={{
+                  id: post.id,
+                  comments: post.comments,
+                  shares: post.shares
+                }} onShare={id => handleSharePost(id)} />
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
 
               {/* Sidebar droite */}
               <div className="col-span-3 space-y-6">
                 <Card className="card-enhanced animate-fade-in" style={{
-                  animationDelay: '0.2s'
-                }}>
+              animationDelay: '0.2s'
+            }}>
                   <CardContent className="p-5">
                     <h3 className="font-poppins font-semibold text-lg mb-4">Artisans suggérés</h3>
                     <div className="space-y-4">
-                      {suggestions.map((suggestion, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
+                      {suggestions.map((suggestion, index) => <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200">
                           <div className="flex items-center space-x-3">
                             <Avatar className="w-10 h-10 ring-2 ring-primary/20">
                               <AvatarImage src="/placeholder.svg" />
@@ -686,20 +605,18 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                           <Button size="sm" variant={followedArtisans.has(suggestion.name) ? "secondary" : "default"} className="text-xs" onClick={() => handleFollowArtisan(suggestion.name)}>
                             {followedArtisans.has(suggestion.name) ? "Suivi" : "Suivre"}
                           </Button>
-                        </div>
-                      ))}
+                        </div>)}
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card className="card-enhanced animate-fade-in" style={{
-                  animationDelay: '0.3s'
-                }}>
+              animationDelay: '0.3s'
+            }}>
                   <CardContent className="p-5">
                     <h3 className="font-poppins font-semibold text-lg mb-4">Tendances</h3>
                      <div className="space-y-3">
-                       {trendingTopics.map((topic) => (
-                         <div key={topic.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
+                       {trendingTopics.map(topic => <div key={topic.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 cursor-pointer">
                            <div>
                              <h4 className="font-semibold text-sm text-primary">{topic.hashtag}</h4>
                              <p className="text-xs text-muted-foreground">{topic.posts_count} publications</p>
@@ -707,33 +624,18 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                            <Badge variant="secondary" className="text-xs bg-success/10 text-success border-0">
                              {topic.growth_percentage}
                            </Badge>
-                         </div>
-                       ))}
+                         </div>)}
                      </div>
                   </CardContent>
                 </Card>
               </div>
-            </div>
-          )}
+            </div>}
 
-          {currentSection === "users" && (
-            <NetworkSection 
-              onFollowUser={handleFollowArtisan}
-              followedUsers={followedArtisans}
-            />
-          )}
+          {currentSection === "users" && <NetworkSection onFollowUser={handleFollowArtisan} followedUsers={followedArtisans} />}
 
-          {currentSection === "artisans" && (
-            <ArtisansSection 
-              onContactArtisan={handleContactArtisan}
-              onLikeArtisan={handleLikeArtisan}
-              likedArtisans={likedArtisans}
-            />
-          )}
+          {currentSection === "artisans" && <ArtisansSection onContactArtisan={handleContactArtisan} onLikeArtisan={handleLikeArtisan} likedArtisans={likedArtisans} />}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
