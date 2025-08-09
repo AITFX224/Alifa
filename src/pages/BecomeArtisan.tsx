@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Hammer, Star, Users, Trophy, ArrowRight, Check, Upload, MapPin, X } from "lucide-react";
+import { Hammer, Star, Users, Trophy, ArrowRight, ArrowLeft, Check, Upload, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,14 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const BecomeArtisan = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     businessName: "",
+    family: "",
     profession: "",
     experience: "",
     description: "",
@@ -26,19 +29,40 @@ const BecomeArtisan = () => {
     acceptsCommissions: false
   });
 
-  const professions = [
-    "Coiffeur/Coiffeuse",
-    "Tailleur/Couturière",
-    "Menuisier",
-    "Mécanicien",
-    "Électricien",
-    "Bijoutier/Bijoutière",
-    "Forgeron",
-    "Potier",
-    "Tisserand",
-    "Cordonnier",
-    "Autre"
-  ];
+const families: Record<string, string[]> = {
+    "Artisanat et techniciens qualifiés": [
+      "Menuisier bois", "Ébéniste", "Charpentier", "Forgeron", "Ferronnier", "Soudeur", "Serrurier",
+      "Mécanicien auto", "Mécanicien moto", "Électricien bâtiment", "Plombier", "Maçon", "Carreleur",
+      "Peintre en bâtiment", "Frigoriste / Climatisation", "Installateur solaire", "Réparateur électroménager",
+      "Technicien TV/Radio", "Réparateur smartphones/PC", "Vitrier", "Potier / Céramiste", "Bijoutier / Orfèvre",
+      "Tisserand", "Cordonner", "Tailleur / Couturière", "Maroquinier", "Sculpteur", "Vannerie / Rotin"
+    ],
+    "Services à la personne": [
+      "Aide à domicile", "Garde d'enfants", "Infirmier(ère) à domicile", "Coiffeur(se)", "Barbier",
+      "Esthéticien(ne)", "Manucure / Pédicure", "Masseur / Kinésithérapeute", "Nounou / Assistante maternelle",
+      "Tuteur / Soutien scolaire", "Ménage", "Repassage", "Blanchisserie", "Cuisinier(ère) à domicile",
+      "Chauffeur privé", "Moto-taxi", "Assistance numérique", "Dépannage informatique à domicile",
+      "Pet-sitter", "Promeneur de chiens", "Toiletteur"
+    ],
+    "Services aux entreprises locales": [
+      "Maintenance bâtiments", "Électricité industrielle", "Plomberie pro", "Climatisation / Froid",
+      "Groupes électrogènes", "Nettoyage bureaux / commerces", "Vitrerie professionnelle",
+      "Dératisation / Désinsectisation / Désinfection", "Reprographie / Impression", "Sérigraphie",
+      "Signalétique / Enseignes", "Comptabilité", "Secrétariat externalisé", "Paie",
+      "Logistique / Coursier", "Manutention", "Micro-stockage", "Gardiennage / Sécurité",
+      "Sécurité incendie", "Recrutement local", "Formation HSE", "Événementiel (Sono/DJ)", "Photo / Vidéo pro"
+    ],
+    "Services commerciaux de proximité": [
+      "Épicier / Kiosque", "Marchand de marché", "Boutique habillement", "Boutique chaussures",
+      "Téléphonie / Accessoires", "Quincaillerie", "Papeterie", "Librairie", "Fleuriste", "Animalerie",
+      "Parapharmacie (réglementé)", "Restaurant", "Café / Tea-room", "Maquis / Buvette", "Street-food",
+      "Traiteur", "Boulanger / Pâtissier", "Glacier", "Mobile money / Transferts", "Cybercafé",
+      "Studio photo minute", "Clés-minute", "Retouches couture", "Livraison locale",
+      "Taxi / Moto-taxi", "Location vélos / scooters", "Location outillage"
+    ]
+  };
+
+  const familyNames = Object.keys(families);
 
   const benefits = [
     {
@@ -143,6 +167,13 @@ const BecomeArtisan = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Bouton de retour */}
+        <div className="flex justify-start">
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Retour
+          </Button>
+        </div>
         {/* En-tête */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-poppins font-bold">Devenir Artisan</h1>
@@ -236,14 +267,29 @@ const BecomeArtisan = () => {
                     placeholder="Ex: Atelier Mamadou"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="profession">Profession</Label>
-                  <Select value={formData.profession} onValueChange={(value) => handleInputChange("profession", value)}>
+<div>
+                  <Label htmlFor="family">Famille de métier</Label>
+                  <Select value={formData.family} onValueChange={(value) => setFormData(prev => ({ ...prev, family: value, profession: "" }))}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez votre profession" />
+                      <SelectValue placeholder="Sélectionnez une famille" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {professions.map((profession) => (
+                    <SelectContent className="z-50 bg-popover">
+                      {familyNames.map((name) => (
+                        <SelectItem key={name} value={name}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="profession">Sous-métier</Label>
+                  <Select value={formData.profession} onValueChange={(value) => handleInputChange("profession", value)} disabled={!formData.family}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={formData.family ? "Sélectionnez votre sous-métier" : "Choisissez d'abord une famille"} />
+                    </SelectTrigger>
+                    <SelectContent className="z-50 bg-popover">
+                      {(families[formData.family] ?? []).map((profession) => (
                         <SelectItem key={profession} value={profession}>
                           {profession}
                         </SelectItem>
@@ -257,7 +303,7 @@ const BecomeArtisan = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionnez" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-50 bg-popover">
                       <SelectItem value="1-2">1-2 ans</SelectItem>
                       <SelectItem value="3-5">3-5 ans</SelectItem>
                       <SelectItem value="6-10">6-10 ans</SelectItem>
