@@ -96,10 +96,19 @@ const families: Record<string, string[]> = {
   };
 
   const handleSubmit = () => {
+    // Simulation de paiement d'abonnement (3 $/mois)
+    localStorage.setItem('artisan_subscription_active', 'true');
+
+    toast({
+      title: "Paiement simulé confirmé",
+      description: "Abonnement activé: 3 $/mois",
+    });
+
     toast({
       title: "Demande envoyée !",
       description: "Votre demande d'artisan sera examinée sous 24-48h"
     });
+
     const params = new URLSearchParams();
     if (formData.family) params.set("famille", formData.family);
     if (formData.profession) params.set("sous", formData.profession);

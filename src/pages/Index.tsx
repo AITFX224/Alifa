@@ -50,6 +50,7 @@ const Index = () => {
   const [likedArtisans, setLikedArtisans] = useState<Set<string>>(new Set());
   const [currentSection, setCurrentSection] = useState("home");
   const [searchParams] = useSearchParams();
+  const [subscriptionActive, setSubscriptionActive] = useState<boolean>(false);
 
   useEffect(() => {
     const section = searchParams.get("section");
@@ -58,6 +59,18 @@ const Index = () => {
       setCurrentSection("artisans");
     }
   }, [searchParams]);
+
+  // Lecture de l'état d'abonnement simulé depuis le localStorage
+  useEffect(() => {
+    setSubscriptionActive(localStorage.getItem('artisan_subscription_active') === 'true');
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'artisan_subscription_active') {
+        setSubscriptionActive(e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
   
   // Transform real posts to match the expected format
   const transformedPosts = realPosts.map(post => ({
@@ -312,7 +325,10 @@ const DesktopPostInteractions = ({ post, onShare }: DesktopPostInteractionsProps
                 onClick={() => { handleSectionChange('artisans'); navigate('?section=artisans'); }}
               >
                 <Hammer className="w-4 h-4 mr-2" />
-                Artisans
+                <span className="mr-1">Artisans</span>
+                {subscriptionActive && (
+                  <Badge variant="secondary" className="ml-1">Actif</Badge>
+                )}
               </Button>
             </div>
 

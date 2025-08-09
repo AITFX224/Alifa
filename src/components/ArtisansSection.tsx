@@ -349,6 +349,11 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
           <div>
             <h1 className="text-2xl md:text-3xl font-poppins font-bold">Artisans de Guinée</h1>
             <p className="text-muted-foreground text-sm md:text-base">Découvrez les meilleurs artisans qualifiés près de chez vous</p>
+            {typeof window !== 'undefined' && localStorage.getItem('artisan_subscription_active') === 'true' && (
+              <div className="mt-2">
+                <Badge variant="secondary">Abonnement actif (simulation)</Badge>
+              </div>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <Button
