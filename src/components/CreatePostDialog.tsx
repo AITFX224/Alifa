@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeContent, validateFileType, validateFileSize, validateFileSignature, sanitizeFilename, rateLimiter } from "@/lib/security";
 import { createPostSchema, type CreatePostData } from "@/lib/validation";
+import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 
 interface CreatePostDialogProps {
   children: React.ReactNode;
@@ -42,6 +43,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
   const [showEventForm, setShowEventForm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { profile } = useCurrentProfile();
 
   const handlePost = async () => {
     // Get current user first
@@ -289,11 +291,13 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
           {/* User info */}
           <div className="flex items-center space-x-3">
             <Avatar className="w-11 h-11">
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback className="bg-gradient-brand text-white">U</AvatarFallback>
+              <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt={`Avatar de ${profile?.display_name || 'utilisateur'}`} />
+              <AvatarFallback className="bg-gradient-brand text-white">
+                {(profile?.display_name?.[0] || 'U').toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <h4 className="font-medium">Utilisateur</h4>
+              <h4 className="font-medium">{profile?.display_name || "Utilisateur"}</h4>
               <p className="text-sm text-muted-foreground">Visible par tout le monde</p>
             </div>
           </div>
