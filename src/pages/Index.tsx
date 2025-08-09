@@ -234,7 +234,7 @@ const Index = () => {
                 </Button>
               </MessagesPanel>
               
-              <CreatePostDialog>
+              <CreatePostDialog onPostCreated={refetch}>
                 <Button className="bg-gradient-brand text-white font-semibold px-6 py-3 rounded-xl hover:shadow-glow hover:scale-105 transition-all duration-300">
                   <Plus className="w-4 h-4 mr-2" />
                   Publier
@@ -307,7 +307,7 @@ const Index = () => {
                       <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
                       <AvatarFallback className="bg-gradient-brand text-white text-sm">{(profile?.display_name?.[0] || 'U').toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <CreatePostDialog>
+                    <CreatePostDialog onPostCreated={refetch}>
                       <Button variant="outline" className="flex-1 justify-start text-muted-foreground bg-muted/20 border-dashed h-10 text-sm touch-target">
                         Que voulez-vous partager ?
                       </Button>
@@ -413,14 +413,14 @@ const Index = () => {
                           {(profile?.display_name?.[0] || 'U').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <CreatePostDialog>
+                      <CreatePostDialog onPostCreated={refetch}>
                         <Button variant="outline" className="flex-1 justify-start text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 border-dashed transition-all duration-300">
                           Que voulez-vous partager, artisan ?
                         </Button>
                       </CreatePostDialog>
                     </div>
                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-                      <CreatePostDialog>
+                      <CreatePostDialog onPostCreated={refetch}>
                         <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
                           <Camera className="w-4 h-4 mr-2" />
                           Photo/Vidéo

@@ -16,6 +16,7 @@ import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 
 interface CreatePostDialogProps {
   children: React.ReactNode;
+  onPostCreated?: () => void;
 }
 
 interface MediaFile {
@@ -31,7 +32,7 @@ interface Event {
   description: string;
 }
 
-export function CreatePostDialog({ children }: CreatePostDialogProps) {
+export function CreatePostDialog({ children, onPostCreated }: CreatePostDialogProps) {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -159,6 +160,9 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
         title: "Publication créée !",
         description: `Votre publication a été partagée avec succès${uploadedMediaUrls.length > 0 ? ` avec ${uploadedMediaUrls.length} fichier(s)` : ''}.`,
       });
+
+      // Notifier le parent pour rafraîchir la liste
+      onPostCreated?.();
 
       // Reset form
       setContent("");
