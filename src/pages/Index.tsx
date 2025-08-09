@@ -527,8 +527,12 @@ const Index = () => {
                               {post.verified && <Sparkles className="w-4 h-4 text-primary fill-primary" />}
                             </div>
                             <div className="flex items-center text-sm text-muted-foreground">
-                              <span className="font-medium text-primary">{post.profession}</span>
-                              <span className="mx-2">•</span>
+                              {(subscriptionActive || post.profession !== 'Artisan') && (
+                                <>
+                                  <span className="font-medium text-primary">{post.profession}</span>
+                                  <span className="mx-2">•</span>
+                                </>
+                              )}
                               <MapPin className="w-3 h-3 mr-1" />
                               <span>{post.location}</span>
                               <span className="mx-2">•</span>
