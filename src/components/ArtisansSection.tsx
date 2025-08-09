@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, Star, Phone, Globe, MessageCircle, Filter, SortDesc, Grid, List, Hammer, Award, Clock, Heart, Share } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useArtisans } from "@/hooks/useArtisans";
+import { useSearchParams } from "react-router-dom";
 
 interface ArtisansSectionProps {
   onContactArtisan: (artisanName: string) => void;
@@ -24,6 +25,42 @@ export const ArtisansSection = ({ onContactArtisan, onLikeArtisan, likedArtisans
   const [selectedLocation, setSelectedLocation] = useState("all");
   const [sortBy, setSortBy] = useState("rating");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Prefill filters from URL params (famille, sous, lieu, q)
+  const [searchParams] = useSearchParams();
+  const getCategoryIdFromText = (text: string) => {
+    const t = text.toLowerCase();
+    if (t.includes("coiff")) return "coiffure";
+    if (t.includes("coutu") || t.includes("mode")) return "couture";
+    if (t.includes("menuis")) return "menuiserie";
+    if (t.includes("mécan") || t.includes("mecan")) return "mecanique";
+    if (t.includes("électr") || t.includes("electr")) return "electricite";
+    if (t.includes("plomb")) return "plomberie";
+    if (t.includes("bijou")) return "bijouterie";
+    if (t.includes("art")) return "art";
+    return "all";
+  };
+
+  useEffect(() => {
+    const famille = searchParams.get("famille") || "";
+    const sous = searchParams.get("sous") || "";
+    const lieu = searchParams.get("lieu") || "";
+    const q = searchParams.get("q") || "";
+
+    if (sous) {
+      setSearchQuery(sous);
+      setSelectedCategory(getCategoryIdFromText(sous));
+    } else if (q) {
+      setSearchQuery(q);
+    } else if (famille) {
+      setSearchQuery(famille);
+      setSelectedCategory(getCategoryIdFromText(famille));
+    }
+
+    if (lieu) setSelectedLocation(lieu);
+    // Run once on load to keep UX simple
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const categories = [
     { id: "all", name: "Tous les métiers", icon: "🔧", count: 1248 },

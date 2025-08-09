@@ -100,7 +100,11 @@ const families: Record<string, string[]> = {
       title: "Demande envoyée !",
       description: "Votre demande d'artisan sera examinée sous 24-48h"
     });
-    setStep(4);
+    const params = new URLSearchParams();
+    if (formData.family) params.set("famille", formData.family);
+    if (formData.profession) params.set("sous", formData.profession);
+    if (formData.location) params.set("lieu", formData.location);
+    navigate(`/artisans?${params.toString()}`);
   };
 
   const handleInputChange = (field: string, value: any) => {
