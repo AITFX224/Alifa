@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Settings, LogOut, Briefcase, Star, Bell, Shield, HelpCircle, Moon, Sun } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useCurrentProfile } from "@/hooks/useCurrentProfile";
+
 interface UserProfileMenuProps {
   children: React.ReactNode;
 }
@@ -40,15 +43,17 @@ export function UserProfileMenu({
   const handleNavigation = (path: string) => {
     navigate(path);
   };
+
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    // Ici vous pourriez implémenter la logique du mode sombre
+    setDarkMode((prev) => !prev);
     document.documentElement.classList.toggle('dark');
     toast({
       title: `Mode ${!darkMode ? 'sombre' : 'clair'} activé`,
       description: `L'interface est maintenant en mode ${!darkMode ? 'sombre' : 'clair'}`
     });
   };
+
+  const { profile } = useCurrentProfile();
   return <Popover>
       <PopoverTrigger asChild>
         {children}
@@ -58,14 +63,14 @@ export function UserProfileMenu({
         <div className="p-4">
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12 ring-2 ring-primary/20">
-              <AvatarImage src="/placeholder.svg" />
+              <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
               <AvatarFallback className="bg-gradient-brand text-white font-semibold">
-                U
+                {(profile?.display_name?.[0] || 'U').toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              
-              <p className="text-sm text-muted-foreground">Berete</p>
+              <p className="font-medium">{profile?.display_name || 'Mon profil'}</p>
+              <p className="text-sm text-muted-foreground">Gérer mon compte</p>
             </div>
           </div>
         </div>

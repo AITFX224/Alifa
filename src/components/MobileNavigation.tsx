@@ -4,6 +4,7 @@ import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { NotificationsPanel } from "@/components/NotificationsPanel";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 
 interface MobileNavigationProps {
   currentSection: string;
@@ -11,6 +12,7 @@ interface MobileNavigationProps {
 }
 
 export const MobileNavigation = ({ currentSection, onSectionChange }: MobileNavigationProps) => {
+  const { profile } = useCurrentProfile();
   return (
     <>
       {/* Mobile Bottom Navigation */}
@@ -68,8 +70,8 @@ export const MobileNavigation = ({ currentSection, onSectionChange }: MobileNavi
               className="flex flex-col items-center space-y-1 p-3 text-muted-foreground"
             >
               <Avatar className="w-6 h-6">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback className="bg-gradient-brand text-white text-xs font-semibold">U</AvatarFallback>
+                <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
+                <AvatarFallback className="bg-gradient-brand text-white text-xs font-semibold">{(profile?.display_name?.[0] || 'U').toUpperCase()}</AvatarFallback>
               </Avatar>
               <span className="text-xs">Profil</span>
             </Button>

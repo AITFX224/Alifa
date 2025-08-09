@@ -21,6 +21,7 @@ import { MobilePostCard } from "@/components/MobilePostCard";
 import { SearchMobile } from "@/components/SearchMobile";
 import { NetworkSection } from "@/components/NetworkSection";
 import { ArtisansSection } from "@/components/ArtisansSection";
+import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 
 const Index = () => {
   const { toast } = useToast();
@@ -30,6 +31,7 @@ const Index = () => {
   const { artisans, loading: artisansLoading } = useArtisans();
   const { trendingTopics, loading: trendingLoading } = useTrendingTopics();
   const navigate = useNavigate();
+  const { profile } = useCurrentProfile();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -245,8 +247,8 @@ const Index = () => {
               
               <UserProfileMenu>
                 <Avatar className="w-11 h-11 hover-scale cursor-pointer border-3 border-primary/30 shadow-md">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback className="bg-gradient-brand text-white font-bold text-lg">U</AvatarFallback>
+                  <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
+                  <AvatarFallback className="bg-gradient-brand text-white font-bold text-lg">{(profile?.display_name?.[0] || 'U').toUpperCase()}</AvatarFallback>
                 </Avatar>
               </UserProfileMenu>
             </div>
@@ -306,8 +308,8 @@ const Index = () => {
                 <CardContent className="p-3">
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-9 h-9">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback className="bg-gradient-brand text-white text-sm">Z</AvatarFallback>
+                      <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
+                      <AvatarFallback className="bg-gradient-brand text-white text-sm">{(profile?.display_name?.[0] || 'U').toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <CreatePostDialog>
                       <Button variant="outline" className="flex-1 justify-start text-muted-foreground bg-muted/20 border-dashed h-10 text-sm touch-target">
