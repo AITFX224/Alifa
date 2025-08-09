@@ -375,6 +375,17 @@ const Auth = () => {
                   </div>
                 )}
               </Button>
+              {isLogin && !isResetPassword && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-10 mt-3"
+                  onClick={() => navigate('/become-artisan')}
+                  aria-label="Devenir artisan"
+                >
+                  Devenir artisan
+                </Button>
+              )}
             </form>
 
             <div className="mt-6 text-center space-y-2">
