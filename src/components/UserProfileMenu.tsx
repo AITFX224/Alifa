@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Settings, LogOut, Briefcase, Star, Bell, Shield, HelpCircle, Moon, Sun } from "lucide-react";
+import { User, Settings, LogOut, Star, Bell, Shield, HelpCircle, Moon, Sun } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { Button } from "@/components/ui/button";
@@ -82,11 +82,6 @@ export function UserProfileMenu({
           <Button variant="ghost" className="w-full justify-start p-3 hover:bg-muted/30" onClick={() => handleNavigation("/profile")}>
             <User className="w-4 h-4 mr-3" />
             Mon profil
-          </Button>
-
-          <Button variant="ghost" className="w-full justify-start p-3 hover:bg-muted/30" onClick={() => handleNavigation("/become-artisan")}>
-            <Briefcase className="w-4 h-4 mr-3" />
-            Devenir artisan
           </Button>
 
           <Button variant="ghost" className="w-full justify-start p-3 hover:bg-muted/30" onClick={() => handleNavigation("/reviews")}>
